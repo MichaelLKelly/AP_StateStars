@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>TileMap Test 6</title>
+
+<!-- I've changed this to v6 below -->
+<script type="text/javascript" src="https://d3js.org/d3.v6.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<style type="text/css">
+
+body {
+    background-color: #F2F0E6;
+    /* background-color: #FFBF00; */
+  }
+
+  </style>
+</head>
+
+<body>
+
+  <div id="tileTest" style="width:600px;height:100px;"></div>
+
+  <svg width="800px" height="600px" id="mapSVG1"></svg>
+
+  <hr>
+  <h3>Try them just in rows</h3>
+
+<!-- <svg width="150px" height="150px" id="singleSVG0"></svg> -->
+<!-- <svg width="150px" height="150px" id="singleSVG2"></svg> -->
+<svg width="150px" height="150px" id="singleSVG1"></svg>
+<div width="750px" height="150px" id="seriesTest"></div>
+<div width="750px" id="singleTest"></div>
+
+</body>
+
+<script>
+// may want these as separate js file later?
+// for map
+        const mapSVG1 = d3.select("#mapSVG1");
+        const mapWidth = 770;
+        const mapHeight = 626;
+        const col = [0,1,2,3,4,5,6,7,8,9,10];
+        const row = [0,1,2,3,4,5,6,7,8,9];
+// for single and series
+        const singleSVG1 = d3.select("#singleSVG1");
+        const singleW = 150;
+        const singleH = 150;
+
+        const singleTest = d3.select("#singleTest")
+        const seriesTest = d3.select("#seriesTest")
+
+// Donuts
+        const outerRadius = 300;
+        const innerRadius = 200;
+        const PDwidth = 600;
+        const PDheight = 600;
+
+        const maxData = 100;
+        const minData = 0;
+        const DMColor = d3.scaleSequential()
+          .domain([minData, maxData])
+          .interpolator(d3.interpolate("burlywood", "peru"));
+// purple values
+        const PVmaxData = 10;
+        const PVminData = -10;
+        const PVColor = d3.scaleSequential()
+          .domain([PVminData, PVmaxData])
+          .interpolator(d3.interpolate("cornflowerblue", "crimson"));
+// scale for the map
+        const mapXScale = d3.scaleBand()
+          .domain(col)
+          .range([0, mapWidth])
+          .padding(0.01);
+        const mapYScale = d3.scaleBand()
+            .domain(row)
+            .range([0, mapHeight])
+            .padding(0.01);
+
+// -------------------- START CSV -------------------
+
+d3.csv("test_tilemap_1.csv").then(dataset => {
+// console.log(dataset)
+// dataset is selected, so now need to add the Stars/ spiders
+
+// would also want doughnut, but that's for later
+// This const may be able to go up higher?
+// features are what the star points will cycle through
+        const features = ["Value1","Gap","Value2","Gap","Value3","Gap","Value4","Gap","Value5","Gap","Value1"];
+// console.log(features);
+
+// RADIAL SCALE TO CREATE INNER CIRCLES VIA TICKS
+    const radialScale = d3.scaleLinear()
+        .domain([-4,10.5])
+    // the range is radius so can be tied to svg size as variable -M
+        .range([0,(.5*(mapXScale.bandwidth()))]);
+    // by doing ticks in reverse, they stack on top of each other - M
+    // ******check to make sure they still correspond - they shoulD - M
+    const ticks = [10,8,6,4,2,0];
+
+// AND ONE FOR THE SINGLE VERSION
+    const radialScaleS = d3.scaleLinear()
+// making this 10.5 creates a buffer aroubd circle within svg
+    .domain([-4,10.5])
+    // the range is radius so can be tied to svg size as variable -M
+    .range([0,singleW/2]);
+// LATER:
+// for ticks - and the circles tied to them - can / should I build them with math that makes them a little smaller than space - and then of course there's the donut...
+
+// TICKS FOR THE MAP
+  ticks.forEach(t =>
+      mapSVG1.selectAll()
+      .data(dataset)
+      .enter()
+      .append("circle")
+      .attr("cx", d => mapXScale(d.col) + .5*(mapXScale.bandwidth()))
+      .attr("cy", d => mapXScale(d.row) + .5*(mapXScale.bandwidth()))
+      .attr("fill", (d => PVColor(+d.PurpleValue)))
+    // made the below transparent - need to think about how these fill
+    // .attr("fill", "rgba(255,0,0,.5)")
+      .attr("class", "starTick")
+      .attr("stroke", "white")
+      .attr("stroke-opacity", 0.15)
+      .attr("r", radialScale(t))
+      );
+
+// ----------AXES FOR MAP - SEPARATED OUT FROM OTHER FUNCTION FOR NOW
+    // ********separated this out from the other function to avoid conflicts with the multiples - but may make sense to bring it back when other is solved...
+    function angleToAxisCoordinate(angle, value){
+      let x = Math.cos(angle) * radialScale(value);
+      let y = Math.sin(angle) * radialScale(value);
+      return {"x": (d => mapXScale(d.col) + .5*(mapXScale.bandwidth()) + x), "y": (d => mapXScale(d.row) + .5*(mapXScale.bandwidth()) - y)};
+      }
+
+    for (var i = 0; i < features.length; i++) {
+      let ft_name = features[i];
+      let angle = (Math.PI / 2) + (2 * Math.PI * i / ((features.length-1)/2));
+      let line_coordinate = angleToAxisCoordinate(angle, 10);
+      // not using labels now. but this would manage that later
+      // let label_coordinate = angleToCoordinate(angle, 10.5);
+      // console.log(line_coordinate);
+
+      // THIS DRAWS THE ACTUAL AXES - DO I NEED THEM????
+    const axisLines = mapSVG1.selectAll()
+      .data(dataset)
+      .enter()
+      .append("line")
+      .attr("x1", d => mapXScale(d.col) + .5*(mapXScale.bandwidth()))
+      .attr("y1", d => mapXScale(d.row) + .5*(mapXScale.bandwidth()))
+      .attr("x2", line_coordinate.x)
+      .attr("y2", line_coordinate.y)
+      .attr("stroke","white")
+      .attr("stroke-opacity", 0.15);
+    // console.log(line_coordinate.x);
+      }
+
+// at some point look at heatmap function in SCOTUS - not specific to this, but insightful
+
+// ---------------- DRAWING THE STARS FOR THE MAP - FUNCTION PLUS
+    function angleToCoordinate(angle, value){
+      let x = Math.cos(angle) * radialScale(value);
+      let y = Math.sin(angle) * radialScale(value);
+
+  // STILL NOT QUITE WORKING - FOR SOME REASON CANT GET IT TO ALLOW THE INITIAL PLACEMENT WITH d
+
+    // let d = dataset;
+    // return {"x": (d => mapXScale(d.col) + .5*(mapXScale.bandwidth())) + x, "y": (d => mapXScale(d.row) + .5*(mapXScale.bandwidth())) - y};
+    // will need the place on the map - then place in the State - then minus y etc.
+// this works now! kind of
+    // return {"x": (d => mapXScale(d.col) + .5*(mapXScale.bandwidth()) + x), "y": (d => mapXScale(d.row) + .5*(mapXScale.bandwidth()) - y)};
+    // FIRST - result = f - no quotes
+    // return {"x": (d => mapXScale(d.col) + .5*(mapXScale.bandwidth()) + x), "y": (d => mapXScale(d.row) + .5*(mapXScale.bandwidth()) - y)};
+    // SECOND - result = f - no quotes
+    // return {"x": d => mapXScale(d.col) + .5*(mapXScale.bandwidth()) + x, "y": d => mapXScale(d.row) + .5*(mapXScale.bandwidth()) - y};
+    // THIRD - result - string and NaN
+    // return {"x": (d => mapXScale(d.col) + .5*(mapXScale.bandwidth())) + x, "y": (d => mapXScale(d.row) + .5*(mapXScale.bandwidth())) - y};
+    // FOURTH - result - string and NaN
+    // return {"x": ((d => mapXScale(d.col) + .5*(mapXScale.bandwidth())) + x), "y": ((d => mapYScale(d.row) + .5*(mapYScale.bandwidth())) - y)};
+    // return {"x": 450 + x, "y": 450 - y};
+    // everything before + x is turning it into a string
+      return {"x": (.5*(mapXScale.bandwidth())) + x, "y": (.5*(mapXScale.bandwidth())) -y};
+      }
+  // end of function
+      const line = d3.line()
+        .x(d => d.x)
+        .y(d => d.y);
+
+  // FUNCTION FOR PLOTTING THE MAP STAR COORDINATES
+    function getPathCoordinates(data_point){
+        let coordinates = [];
+        for (var i = 0; i < features.length; i++){
+            let ft_name = features[i];
+            let angle = (Math.PI / 2) + (2 * Math.PI * i / (features.length-1));
+            coordinates.push(angleToCoordinate(angle, data_point[ft_name]))
+        }
+        return coordinates;
+        }
+
+      // LOOPS THROUGH THE STATES AND PLOTS THE MAP STAR COORDINATES
+    for (var i = 0; i < dataset.length; i ++){
+        // let d = dataset[i];
+        // i combind the line above with one below - cleaner
+        let coordinates = getPathCoordinates(dataset[i]);
+
+    // mapSVG1.selectAll()
+    // .datum(coordinates)
+    // .enter()
+    // .append("path")
+
+      // ACTUALLY DRAWS THE PATH
+        mapSVG1.append("path")
+        .datum(coordinates)
+        .attr("d",line)
+        .attr("stroke-width", 1)
+        .attr("stroke", "grey")
+        .attr("fill", "white")
+        .attr("stroke-opacity", 1)
+        .attr("opacity", 0.8);
+        // added the ID for later use
+        // .attr("id", "StateStar");
+// HOW I TEST IF THIS IS WORKING - LOG COORDINATES
+        // console.log(coordinates);
+        }
+// END OF PLOTTING / DRAWING - MAP SHOULD SHOW STARS
+
+
+// ****using mapXScale for all of these to maintain square form - can maybe change naming of that later and include mapYscale
+// probably cleaner way than repeating this
+
+// 'CODE' LABELS FOR STARS IN MAP (AL, AK, ETC.)
+      const mapLabels = mapSVG1.selectAll()
+        .data(dataset)
+        .enter()
+        .append("text")
+        .attr("x", d => mapXScale(d.col)+ .5*(mapXScale.bandwidth()))
+        .attr("y", d => mapXScale(d.row)+ .5*(mapXScale.bandwidth()) + 3)
+        .attr("text-anchor", "middle")
+        .text(d => d.code);
+
+
+// ---------------------- SINGLE TESTS -----------------------------
+
+
+// for potetnial future shadow/dimension on the stars, I should be able to create another path that uses the 'starbase' of -4 that I created in the csv, but I believe it will need more points and that means better understanding how we plot those - so in a couple of weeks
+    // const ftShadow = ["starbase","Gap","Value2","Gap","Value3","Gap","Value4","Gap","Value5","Gap","Value1"];
+
+// TICKS FOR SINGLE - BY ITSELF
+  ticks.forEach(t =>
+      singleSVG1.selectAll()
+      .data(dataset)
+      .enter()
+      .append("circle")
+      .attr("cx", singleW / 2)
+      .attr("cy", singleH / 2)
+      .attr("fill", (d => PVColor(+d.PurpleValue)))
+      .attr("class", "starTick")
+      .attr("stroke", "white")
+      .attr("stroke-opacity", 0.15)
+      .attr("r", radialScaleS(t))
+      );
+
+// AXES FOR SINGLE - SKIPPING FOR NOW
+
+// DRAWING THE STARS
+    function angleToCoordSing(angle, value){
+      let x = Math.cos(angle) * radialScaleS(value);
+      let y = Math.sin(angle) * radialScaleS(value);
+      return {"x": (singleW/2) + x, "y": (singleH/2) -y};
+      }
+
+    const singLine = d3.line()
+      .x(d => d.x)
+      .y(d => d.y);
+
+    function getPathCoordSing(data_point){
+        let coordinates = [];
+        for (var i = 0; i < features.length; i++){
+            let ft_name = features[i];
+            let angle = (Math.PI / 2) + (2 * Math.PI * i / (features.length-1));
+            coordinates.push(angleToCoordSing(angle, data_point[ft_name]))
+        }
+        return coordinates;
+        }
+// DRAWING THE PATH
+    for (var i = 0; i < dataset.length; i ++){
+      let coordinates = getPathCoordSing(dataset[i]);
+
+      singleSVG1.append("path")
+      .datum(coordinates)
+      .attr("d",singLine)
+      .attr("stroke-width", 1)
+      .attr("stroke", "grey")
+      .attr("fill", "white")
+      .attr("stroke-opacity", 1)
+      .attr("opacity", 0.8)
+      // .attr("visibility", "hidden")
+      ;
+    // console.log(coordinates);
+    }
+
+// ---------------------- SINGLES-AS-SERIES TESTS -----------------------------
+
+// TRYING TO LOOP THROUGH ALL 50
+
+
+    for (var i = 0; i < dataset.length; i ++){
+        singleTest.selectAll("svg")
+          .data(dataset)
+          .enter()
+          .append("svg")
+          .attr("width", singleW)
+          .attr("height", singleH+20)
+          // .style("background", "grey")
+          .attr("id",(d=>d.code));
+
+// seems like inserting data(dataset) in some of the below essentially resets and keeps color from being applied - so as if all of these read off of the data(dataset) that establishes the svg... maybe?
+
+        singleTest.selectAll("svg")
+          .append("text")
+          .attr("x", 3)
+          .attr("y", 12)
+          .text(d=>d.state);
+
+        ticks.forEach(t =>
+          singleTest.selectAll("svg")
+          .append("circle")
+          .attr("cx", singleW / 2)
+          .attr("cy", (singleH / 2)+20)
+          .attr("fill", (d => PVColor(+d.PurpleValue)))
+          .attr("stroke", "white")
+          .attr("stroke-opacity", 0.35)
+          .attr("r", radialScaleS(t))
+          );
+
+    function angleToCoordSing(angle, value){
+      let x = Math.cos(angle) * radialScaleS(value);
+      let y = Math.sin(angle) * radialScaleS(value);
+      return {"x": (singleW/2) + x, "y": (singleH/2 +20) -y};
+      }
+
+    const singLine = d3.line()
+      .x(d => d.x)
+      .y(d => d.y);
+
+    function getPathCoordSing(data_point){
+        let coordinates = [];
+        for (var i = 0; i < features.length; i++){
+            let ft_name = features[i];
+            let angle = (Math.PI / 2) + (2 * Math.PI * i / (features.length-1));
+            coordinates.push(angleToCoordSing(angle, data_point[ft_name]))
+        }
+        return coordinates;
+        }
+
+    for (var i = 0; i < dataset.length; i ++){
+      let coordinates = getPathCoordSing(dataset[i]);
+
+      // singleTest.append("path")
+  singleTest.selectAll("svg")
+      .append("path")
+      .datum(coordinates)
+      .attr("d",singLine)
+      .attr("stroke-width", 1)
+      .attr("stroke", "grey")
+      .attr("fill", "white")
+      .attr("stroke-opacity", 1)
+      .attr("opacity", 0.8)
+      // .attr("visibility", "hidden")
+      ;
+
+      singleTest.selectAll("svg")
+        .append("text")
+        .attr("x", singleW / 2)
+        .attr("y", (singleH / 2)+25)
+        .attr("text-anchor", "middle")
+        // .attr("fill", "blue")
+        .attr("fill", "grey")
+        // .text("bacon");
+        .text(d=>d.code);
+
+
+      // console.log(coordinates);
+      }
+      // end of for loop for SERIES OF singles
+          }
+
+
+// d3.select("#CA")
+//   .append("text")
+//   .attr("x", singleW / 2)
+//   .attr("y", singleH / 2)
+//   .attr("text-anchor", "middle")
+//   // .attr("fill", "blue")
+//   .attr("fill", (d => PVColor(+d.PurpleValue)))
+//   // .text("bacon");
+//   .text(d=>d.code);
+//
+//   d3.select("#AZ")
+//     .append("text")
+//     .attr("x", singleW / 2)
+//     .attr("y", singleH / 2)
+//     .attr("text-anchor", "middle")
+//     // .attr("fill", "blue")
+//     .attr("fill", (d => PVColor(+d.PurpleValue)))
+//     // .text("bacon");
+//     .text(d=>d.code);
+//
+//
+//
+//     d3.select("#NY")
+//       .append("text")
+//       .attr("x", singleW / 2)
+//       .attr("y", singleH / 2)
+//       .attr("text-anchor", "middle")
+//       // .attr("fill", "blue")
+//       .attr("fill", (d => PVColor(+d.PurpleValue)))
+//       // .text("bacon");
+//       .text(d=>d.code);
+//
+//
+//
+//
+
+
+
+// ----------------------TRYING ONE AT A TIME FOR COMPARISON SAKE
+//       const stAL = d3.select("#AL")
+//       const stAK = d3.select("#AK")
+//       const stAZ = d3.select("#AZ")
+//       const stAR = d3.select("#AR")
+//       const stCA = d3.select("#CA")
+//       const stCO = d3.select("#CO")
+//
+//       // TICKS FOR SERIES SINGLE - BY ITSELF - AL
+//         ticks.forEach(t =>
+//             stAL.selectAll()
+//             .data(dataset)
+//             .enter()
+//             .append("circle")
+//             .attr("cx", singleW / 2)
+//             .attr("cy", singleH / 2)
+//             .attr("fill", ((d,i) => PVColor(+d.PurpleValue)))
+//             .attr("class", "starTick")
+//             .attr("stroke", "white")
+//             .attr("stroke-opacity", 0.15)
+//             .attr("r", radialScaleS(t))
+//             );
+//
+//       // AXES FOR SINGLE - SKIPPING FOR NOW
+//
+//       // DRAWING THE STARS
+//           function angleToCoordSing(angle, value){
+//             let x = Math.cos(angle) * radialScaleS(value);
+//             let y = Math.sin(angle) * radialScaleS(value);
+//             return {"x": (singleW/2) + x, "y": (singleH/2) -y};
+//             }
+//
+//           const LineAL = d3.line()
+//             .x(d => d.x)
+//             .y(d => d.y);
+//
+//           function getPathCoordSing(data_point){
+//               let coordinates = [];
+//               if (i == 0) {
+//                   let ft_name = features[i];
+//                   let angle = (Math.PI / 2) + (2 * Math.PI * i / (features.length-1));
+//                   coordinates.push(angleToCoordSing(angle, data_point[ft_name]))
+//               }
+//               return coordinates;
+//               }
+//       // DRAWING THE PATH
+//           for (var i = 0; i < dataset.length; i ++){
+//             let coordinates = getPathCoordSing(dataset[0]);
+//
+//             stAL.append("path")
+//             .datum(coordinates)
+//             .attr("d",LineAL)
+//             .attr("stroke-width", 1)
+//             .attr("stroke", "grey")
+//             .attr("fill", "white")
+//             .attr("stroke-opacity", 1)
+//             .attr("opacity", 0.8)
+//             // .attr("visibility", "hidden")
+//             ;
+//
+//           }
+// // text not working
+//           stAL.select()
+//             .data(dataset[0])
+//             .enter()
+//             .append("text")
+//             .attr("x", singleW / 2)
+//             .attr("y", singleH / 2)
+//             .attr("text-anchor", "middle")
+//             .text(d => d.code);
+//
+//
+// // END OF AL
+//
+//
+// // TICKS FOR SERIES SINGLE - BY ITSELF - AK
+//   ticks.forEach(t =>
+//       stAK.selectAll()
+//       .data(dataset)
+//       .enter()
+//       .append("circle")
+//       .attr("cx", singleW / 2)
+//       .attr("cy", singleH / 2)
+//       .attr("fill", (d => PVColor(+d.PurpleValue)))
+//       .attr("class", "starTick")
+//       .attr("stroke", "white")
+//       .attr("stroke-opacity", 0.15)
+//       .attr("r", radialScaleS(t))
+//       );
+//
+// // AXES FOR SINGLE - SKIPPING FOR NOW
+//
+// // DRAWING THE STARS
+//     function angleToCoordSing(angle, value){
+//       let x = Math.cos(angle) * radialScaleS(value);
+//       let y = Math.sin(angle) * radialScaleS(value);
+//       return {"x": (singleW/2) + x, "y": (singleH/2) -y};
+//       }
+//
+//     const LineAK = d3.line()
+//       .x(d => d.x)
+//       .y(d => d.y);
+//
+//     function getPathCoordSing(data_point){
+//         let coordinates = [];
+//         if (i == 1) {
+//             let ft_name = features[i];
+//             let angle = (Math.PI / 2) + (2 * Math.PI * i / (features.length-1));
+//             coordinates.push(angleToCoordSing(angle, data_point[ft_name]))
+//         }
+//         return coordinates;
+//         }
+// // DRAWING THE PATH
+//     for (var i = 0; i < dataset.length; i ++){
+//       let coordinates = getPathCoordSing(dataset[1]);
+//
+//       stAK.append("path")
+//       .datum(coordinates)
+//       .attr("d",LineAK)
+//       .attr("stroke-width", 1)
+//       .attr("stroke", "grey")
+//       .attr("fill", "white")
+//       .attr("stroke-opacity", 1)
+//       .attr("opacity", 0.8)
+//       // .attr("visibility", "hidden")
+//       ;
+//     // console.log(coordinates);
+//     }
+// // END OF AK
+//
+//
+//
+// // TICKS FOR SERIES SINGLE - BY ITSELF - AZ
+//   ticks.forEach(t =>
+//       stAZ.selectAll()
+//       .data(dataset)
+//       .enter()
+//       .append("circle")
+//       .attr("cx", singleW / 2)
+//       .attr("cy", singleH / 2)
+//       .attr("fill", (d => PVColor(+d.PurpleValue)))
+//       .attr("class", "starTick")
+//       .attr("stroke", "white")
+//       .attr("stroke-opacity", 0.15)
+//       .attr("r", radialScaleS(t))
+//       );
+//
+// // AXES FOR SINGLE - SKIPPING FOR NOW
+//
+// // DRAWING THE STARS
+//     function angleToCoordSing(angle, value){
+//       let x = Math.cos(angle) * radialScaleS(value);
+//       let y = Math.sin(angle) * radialScaleS(value);
+//       return {"x": (singleW/2) + x, "y": (singleH/2) -y};
+//       }
+//
+//     const LineAZ = d3.line()
+//       .x(d => d.x)
+//       .y(d => d.y);
+//
+//     function getPathCoordSing(data_point){
+//         let coordinates = [];
+//         if (i == 2) {
+//             let ft_name = features[i];
+//             let angle = (Math.PI / 2) + (2 * Math.PI * i / (features.length-1));
+//             coordinates.push(angleToCoordSing(angle, data_point[ft_name]))
+//         }
+//         return coordinates;
+//         }
+// // DRAWING THE PATH
+//     for (var i = 0; i < dataset.length; i ++){
+//       let coordinates = getPathCoordSing(dataset[2]);
+//
+//       stAZ.append("path")
+//       .datum(coordinates)
+//       .attr("d",LineAZ)
+//       .attr("stroke-width", 1)
+//       .attr("stroke", "grey")
+//       .attr("fill", "white")
+//       .attr("stroke-opacity", 1)
+//       .attr("opacity", 0.8)
+//       // .attr("visibility", "hidden")
+//       ;
+//     // console.log(coordinates);
+//     }
+// // END OF AZ
+//
+//
+//
+//
+//
+//
+//
+//
+// // TICKS FOR SERIES SINGLE - BY ITSELF - AR
+//   ticks.forEach(t =>
+//       stAR.selectAll()
+//       .data(dataset)
+//       .enter()
+//       .append("circle")
+//       .attr("cx", singleW / 2)
+//       .attr("cy", singleH / 2)
+//       .attr("fill", (d => PVColor(+d.PurpleValue)))
+//       .attr("class", "starTick")
+//       .attr("stroke", "white")
+//       .attr("stroke-opacity", 0.15)
+//       .attr("r", radialScaleS(t))
+//       );
+//
+// // AXES FOR SINGLE - SKIPPING FOR NOW
+//
+// // DRAWING THE STARS
+//     function angleToCoordSing(angle, value){
+//       let x = Math.cos(angle) * radialScaleS(value);
+//       let y = Math.sin(angle) * radialScaleS(value);
+//       return {"x": (singleW/2) + x, "y": (singleH/2) -y};
+//       }
+//
+//     const LineAR = d3.line()
+//       .x(d => d.x)
+//       .y(d => d.y);
+//
+//     function getPathCoordSing(data_point){
+//         let coordinates = [];
+//         if (i == 3) {
+//             let ft_name = features[i];
+//             let angle = (Math.PI / 2) + (2 * Math.PI * i / (features.length-1));
+//             coordinates.push(angleToCoordSing(angle, data_point[ft_name]))
+//         }
+//         return coordinates;
+//         }
+// // DRAWING THE PATH
+//     for (var i = 0; i < dataset.length; i ++){
+//       let coordinates = getPathCoordSing(dataset[3]);
+//
+//       stAR.append("path")
+//       .datum(coordinates)
+//       .attr("d",LineAR)
+//       .attr("stroke-width", 1)
+//       .attr("stroke", "grey")
+//       .attr("fill", "white")
+//       .attr("stroke-opacity", 1)
+//       .attr("opacity", 0.8)
+//       // .attr("visibility", "hidden")
+//       ;
+//     // console.log(coordinates);
+//     }
+// // END OF AR
+//
+//
+//
+//
+//
+// // TICKS FOR SERIES SINGLE - BY ITSELF - CA
+//   ticks.forEach(t =>
+//       stCA.selectAll()
+//       .data(dataset)
+//       .enter()
+//       .append("circle")
+//       .attr("cx", singleW / 2)
+//       .attr("cy", singleH / 2)
+//       .attr("fill", (d => PVColor(+d.PurpleValue)))
+//       .attr("class", "starTick")
+//       .attr("stroke", "white")
+//       .attr("stroke-opacity", 0.15)
+//       .attr("r", radialScaleS(t))
+//       );
+//
+// // AXES FOR SINGLE - SKIPPING FOR NOW
+//
+// // DRAWING THE STARS
+//     function angleToCoordSing(angle, value){
+//       let x = Math.cos(angle) * radialScaleS(value);
+//       let y = Math.sin(angle) * radialScaleS(value);
+//       return {"x": (singleW/2) + x, "y": (singleH/2) -y};
+//       }
+//
+//     const LineCA = d3.line()
+//       .x(d => d.x)
+//       .y(d => d.y);
+//
+//     function getPathCoordSing(data_point){
+//         let coordinates = [];
+//         if (i == 4) {
+//             let ft_name = features[i];
+//             let angle = (Math.PI / 2) + (2 * Math.PI * i / (features.length-1));
+//             coordinates.push(angleToCoordSing(angle, data_point[ft_name]))
+//         }
+//         return coordinates;
+//         }
+// // DRAWING THE PATH
+//     for (var i = 0; i < dataset.length; i ++){
+//       let coordinates = getPathCoordSing(dataset[4]);
+//
+//       stCA.append("path")
+//       .datum(coordinates)
+//       .attr("d",LineAL)
+//       .attr("stroke-width", 1)
+//       .attr("stroke", "grey")
+//       .attr("fill", "white")
+//       .attr("stroke-opacity", 1)
+//       .attr("opacity", 0.8)
+//       // .attr("visibility", "hidden")
+//       ;
+//
+//
+//       // .attr("visibility", "hidden")
+//       ;
+//
+//     // console.log(coordinates);
+//     }
+// // END OF CA
+//
+// d3.select("#CO")
+// .append('input');
+
+
+
+// END OF CSV
+    });
+
+    </script>
+</html>
