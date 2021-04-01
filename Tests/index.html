@@ -3,13 +3,15 @@
 
 <head>
   <meta charset="utf-8">
-  <title>AP Proto 21Mar21</title>
+  <title>AP Proto 31Mar21</title>
 
-  <!-- Need to change this to v6 below -->
   <script type="text/javascript" src="https://d3js.org/d3.v6.js"></script>
-  <!-- <script src="https://d3js.org/d3.v5.min.js"></script> -->
+
+  <!-- Some day, maybe look at favicon as well.... Just a star.... -->
 
   <style type="text/css">
+    /* includes styles for some other pages. will no doubt eventually place as separate file with link */
+
     body {
       background-image: linear-gradient(180deg, #FFBF00, #F2F0E6);
       background-repeat: no-repeat;
@@ -44,22 +46,17 @@
       align-items: center;
       font-size: 24pt;
       text-transform: uppercase;
-      letter-spacing:3px;
+      letter-spacing: 3px;
       color: white;
     }
-/* https://www.w3schools.com/css/css_align.asp */
 
-
+    /* https://www.w3schools.com/css/css_align.asp */
     .intro {
       padding: 30px 70px 30px 70px;
       text-align: center;
       font-size: 18pt;
+      color: white;
     }
-
-/* hr{
-  padding: 0px;
-} */
-
 
     #baseStar {
       flex: 1 1 300px;
@@ -73,227 +70,198 @@
       margin: auto;
     }
 
-/* for the individual stars */
-
-#tooltip{
-  position: absolute;
-  width: 150px;
-  height: 30px;
-  padding: 2px;
-  text-align: center;
-  font-family:sans-serif;
-  font-size: 12px;
-  background: white;
-  visibility: hidden;
-}
-
-
-
-  .line {
-    fill: none;
-    stroke: #426789;
-    stroke-width: 2px;
+    /* for the map and legend */
+    .mapContainer {
+      margin: auto;
+      text-align: center;
     }
 
+    .legendControl {
+      margin: 10px 10px 10px 10px;
+      display: flex;
+      flex-direction: row;
+    }
 
-#singleTest {
-  max-width: 1000px;
-  margin: auto;
-  /* padding: 10px 30px 10px 30px; */
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-}
+    /* can probably make these next two a class? */
+    #purpleTog {
+      color: darkslategrey;
+      flex: 2 1 275px;
+      font-family: sans-serif;
+      padding: 5px 10px 5px 30px;
+    }
 
-/* flex
-https://css-tricks.com/snippets/css/a-guide-to-flexbox/ */
+    #starTog {
+      color: darkslategrey;
+      flex: 2 1 275px;
+      font-family: sans-serif;
+      padding: 5px 10px 5px 30px;
+    }
 
-#togcontainer {
-  padding: 5px 10px 5px 30px;
-}
+    .toggleLabel {
+      font-family: sans-serif;
+      color: darkslategrey;
+    }
 
+    .legend {
+      flex: 1 1 150px;
+    }
 
+    .legendKey {
+      flex: 2 1 300px;
+      font-family: sans-serif;
+      line-height: 1.4;
+      color: darkslategrey;
+      font-size: 11pt;
+      padding-left: 10px;
+    }
+
+    .legLabel {
+      font-family: sans-serif;
+      color: darkslategrey;
+      font-size: 11pt;
+    }
+
+    .mapTitle {
+      text-align: center;
+      font-size: 24px;
+    }
+
+    .mapCodes {
+      font-family: sans-serif;
+      font-size: 10pt;
+      fill: grey;
+    }
+
+    #mapSVG1 {
+      margin: auto;
+    }
+
+    /* for the individual stars */
+    /* Need to look up some tooltips formatting. Theya are tricky in terms of line breaks and such*/
+    #tooltip {
+      position: absolute;
+      width: 150px;
+      height: 30px;
+      padding: 2px;
+      text-align: center;
+      font-family: sans-serif;
+      font-size: 12px;
+      background: white;
+      visibility: hidden;
+    }
+
+    .line {
+      fill: none;
+      stroke: #426789;
+      stroke-width: 2px;
+    }
+
+    #singleTest {
+      max-width: 1000px;
+      margin: auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* flex - just for reference
+    https://css-tricks.com/snippets/css/a-guide-to-flexbox/ */
   </style>
 </head>
 
 <body>
 
-
   <main>
-    <!-- <img
-    src="unsplash_collage_2_sm.png"
-    width="100%"
-  /> -->
+
     <div class="navbar">Nav goes here...</div>
+    <!-- Presuming that I eventually want a nav bar and don't just go with a continuous scroll... -->
 
     <div width="1000px" height="200px">
 
       <div class="display">
 
         <div class="title">
-          Title of the Project
+          Aren't All States<br>Purple?
         </div>
 
         <div width="300px" id="baseStar"></div>
 
       </div>
       <div class="intro">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed felis neque, maximus sed ullamcorper semper, semper eget tortor. Sed ut auctor nunc. Sed non odio porta, faucibus velit ultrices, maximus erat. Mauris in nisl pretium, dictum enim
-        ac, placerat felis. Pellentesque sed sapien eget turpis pulvinar sagittis vel sit amet.
+        This project aims to present an unironic, non-partisan collection of U.S. State portraits using existing data broken into ranked quantiles. While showing portraits of every state, the project will make select comparisons between seemingly
+        disparate red, blue and purple states via comparison of economic and/or social data. This text is placeholder for the current iteration, which brings together most of the structure, narrative and technology in one place, but needs considerable refinement.
       </div>
 
     </div>
-<hr>
+    <hr>
 
-    <div id="togcontainer">
-      <label class="historytoggle">Registered Voters
-        <input type="radio" checked="checked" name="radioPurple" value="regVoters">
-        <span class="checkmark"></span>
-      </label> <br>
-      <label class="historytoggle">2020 Election
-        <input type="radio" name="radioPurple" value="pres2020">
-        <span class="checkmark"></span>
-      </label>
+    <div class="legendControl">
+      <!-- One toggle for purple background -->
+      <div id="purpleTog">
+        <span style="font-weight:bold">Select the Purple value for the star background:</span><br>
+        <label class="toggleLabel">Registered Voters
+          <input type="radio" checked="checked" name="radioPurple" value="regVoters">
+          <span class="checkmark"></span>
+        </label> <br>
+        <label class="toggleLabel">2020 Election
+          <input type="radio" name="radioPurple" value="pres2020">
+          <span class="checkmark"></span>
+        </label>
+      </div>
+      <!-- One toggle for star path values - int heory-->
+      <div id="starTog">
+        <span style="font-weight:bold">Select the Values you would like to map:</span><br>
+        <label class="toggleLabel">Opportunity Index
+          <input type="radio" checked="checked" name="radioStar" value="Opportunity">
+          <span class="checkmark"></span>
+        </label> <br>
+        <label class="toggleLabel">Some Other
+          <input type="radio" name="radioStar" value="SomeOther">
+          <span class="checkmark"></span>
+        </label>
+      </div>
+
+      <div class="legend">
+        <!-- Legend example goes here -->
+        <svg width="150px" height="125px" id="mapLegend"></svg>
+      </div>
+
+      <!-- will probably want to make these a default of value as a span I identify and replae as options are selected -->
+<!-- **CAN
+part of the goal here is linking something like this legendKey to automatically update when path values (presumably pulled from the csv) are changed - more on this farther down - Note: If I had my way, I would have the labels right next to the points, but d3's defaults in this regard make that untenable-->
+
+      <div class="legendKey">
+        <span style="font-weight:bold">Opportunity Index Rankings</span><br>
+        A: Overall Opportunity<br>
+        B: Economy Opportunity<br>
+        C: Education Opportunity<br>
+        D: Community Opportunity<br>
+        E: Health Opportunity<br>
+      </div>
+
     </div>
-<hr>
-<div width="750px" id="singleTest"></div>
 
+    <hr>
+    <div class="mapTitle">The States</div>
+    <div class="mapContainer">
+      <svg width="900px" height="800px" id="mapSVG1"></svg>
+    </div>
+    <hr>
+    ©2021 M Kelly
 
-
+    <!-- non-map small multiples grid can be found in AP_Home_Proto_24Mar.html
+  Some of their values are stil in this script, which I should probably make a separate file anyway-->
 
   </main>
 </body>
 
 <script>
-  // for base Star
-  const baseW = 300;
-  const baseH = 300;
-  const baseStar = d3.select("#baseStar")
+  // for some reason I default to grouping constants, functions, etc. May not be the best idea
 
-// for single Stars
-const singleW = 150;
-const singleH = 150;
-const singleTest = d3.select("#singleTest")
-
-
-// purple values - using Gallup for now
-const PVmaxData = 60;
-const PVminData = 25;
-  const PVColor = d3.scaleSequential()
-    .domain([PVminData, PVmaxData])
-    .interpolator(d3.interpolate("#2980B9", "#C0392B"));
-  // .interpolator(d3.interpolate("cornflowerblue", "crimson"));
-  // scale for the map
-
-
-  const datasetB = [{
-    "Value1": 10,
-    "Gap": 0,
-    "Value2": 10,
-    "Value3": 10,
-    "Value4": 10,
-    "Value5": 10,
-    "Center": -5,
-    "PurpleValue": 0
-  }]
-
-  const features = ["Value1", "Gap", "Value2", "Gap", "Value3", "Gap", "Value4", "Gap", "Value5", "Gap", "Value1"];
-  const shadeures = ["Center", "Gap", "Value2", "Center", "Gap", "Value3", "Center", "Gap", "Value4", "Center", "Gap", "Value5", "Center", "Gap", "Value1", "Center"];
-
-
-  // by doing ticks in reverse, they stack on top of each other - M
-  // ******check to make sure they still correspond - they shoulD - M
-  const ticks = [10, 8, 6, 4, 2, 0];
-
-  // AND ONE FOR THE SINGLE VERSION
-  const radialScaleB = d3.scaleLinear()
-    // making this 10.5 creates a buffer arouNd circle within svg
-    // THIS IS NO5 -5 SHOULD DO SAME FOR SMALLER ONES.....
-    .domain([-5, 10.5])
-    // the range is radius so can be tied to svg size as variable -M
-    .range([0, baseW / 2]);
-
-  const radialScaleS = d3.scaleLinear()
-// making this 10.5 creates a buffer aroubd circle within svg
-    .domain([-5,10.5])
-    // the range is radius so can be tied to svg size as variable -M
-    .range([0,singleW/2]);
-
-  // these get called later....
-  var margin = {
-    top: 10,
-    right: 10,
-    bottom: 10,
-    left: 10
-  };
-
-  // LATER:
-  // for ticks - and the circles tied to them - can / should I build them with math that makes them a little smaller than space - and then of course there's the donut...
-
-// ------------------------- FUNCTIONS -----------------------------
-
-  function angleToCoordBase(angle, value) {
-    let x = Math.cos(angle) * radialScaleB(value);
-    let y = Math.sin(angle) * radialScaleB(value);
-    return {
-      "x": (baseW / 2) + x,
-      "y": (baseH / 2 + 20) - y
-    };
-  }
-
-  function getPathCoordBase(starData) {
-    let coordinates = [];
-    for (var i = 0; i < features.length; i++) {
-      let ft_name = features[i];
-      let angle = (Math.PI / 2) + (2 * Math.PI * i / (features.length - 1));
-      // let angle = (Math.PI / 2) + (2 * Math.PI * i / 10);
-      coordinates.push(angleToCoordBase(angle, starData[ft_name]))
-    }
-    return coordinates;
-  }
-
-  function angleToShadeSing(angle, value) {
-    let x = Math.cos(angle) * radialScaleB(value);
-    let y = Math.sin(angle) * radialScaleB(value);
-    return {
-      "x": (baseW / 2) + x,
-      "y": (baseH / 2 + 20) - y
-    };
-  }
-
-  function getPathShadeSing(starData) {
-    let shadeordinates = [];
-    for (var i = 0; i < 3; i++) {
-      let ft_name = shadeures[i];
-      // Order of operations - PEMDAS
-      let angle = (Math.PI / 2) + (2 * Math.PI * i / 10);
-      shadeordinates.push(angleToShadeSing(angle, starData[ft_name]))
-    }
-    return shadeordinates;
-  }
-
-
-  function angleToCoordSing(angle, value){
-    let x = Math.cos(angle) * radialScaleS(value);
-    let y = Math.sin(angle) * radialScaleS(value);
-    return {"x": (singleW/2) + x, "y": (singleH/2 +20) -y};
-    }
-
-  function getPathCoordSing(starData){
-        let coordinates = [];
-        for (var i = 0; i < features.length; i++){
-            let ft_name = features[i];
-            let angle = (Math.PI / 2) + (2 * Math.PI * i / (features.length-1));
-            coordinates.push(angleToCoordSing(angle, starData[ft_name]))
-        }
-        return coordinates;
-        }
-
-
-
-
-
-// ---------------------------------------
+  // for all lines - can probably update all to just line - no need for sing and shade
+  const line = d3.line()
+    .x(d => d.x)
+    .y(d => d.y);
 
   let singLine = d3.line()
     .x(d => d.x)
@@ -303,170 +271,488 @@ const PVminData = 25;
     .x(d => d.x)
     .y(d => d.y);
 
-  baseStar.selectAll("svg")
-    .data(datasetB)
-    .enter()
-    .append("svg")
-    // .style("margin-bottom", "10px")
-    .attr("width", baseW + margin.left + margin.right)
-    .attr("height", baseH + 10 + margin.top + margin.bottom)
-    .attr("class","base");
+  // for base Star
+  const baseW = 300;
+  const baseH = 300;
+  const baseStar = d3.select("#baseStar")
+  // dataset for base star - and Legend - since they are complete stars and do not pull from csv
+  const datasetB = [{
+    "Value1": 10,
+    "Gap": 0,
+    "Value2": 10,
+    "Value3": 10,
+    "Value4": 10,
+    "Value5": 10,
+    "Center": -5,
+    "PurpleValue": 42.5
+    // **** current 'base' PurpleValue is based on those weird registered voter numbers - which again need to be fixed
+  }]
 
-  ticks.forEach(t =>
-    baseStar.selectAll("svg.base")
-    .append("circle")
-    .attr("cx", baseW / 2)
-    .attr("cy", (baseH / 2) + 20)
-    .attr("fill", "#5d4b61")
-    .attr("stroke", "white")
-    .attr("stroke-opacity", 0.35)
-    .attr("r", radialScaleB(t))
-  );
+  // for legend - including point labels -* which is not the best way to do this, I know
+  const legendW = 150;
+  const legendH = 125;
+  const mapLegend = d3.select("#mapLegend");
+
+  const points = ["A", "B", "C", "D", "E"];
+
+  // for map, including columns and rows for tiling
+  const mapSVG1 = d3.select("#mapSVG1");
+  const mapWidth = 900;
+  const mapHeight = 626;
+  const col = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const row = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+  // for single Stars
+  const singleW = 150;
+  const singleH = 150;
+  const singleTest = d3.select("#singleTest")
+
+  // For donuts - not seen here - will need to resolve this with solo star page
+  const outerRadius = 300;
+  const innerRadius = 200;
+  const PDwidth = 600;
+  const PDheight = 600;
+
+  // purple values - using Gallup registerd voters for now, which is why numbers are weird. will normalize when I solidify dataset there
+  const PVmaxData = 60;
+  const PVminData = 25;
+  const PVColor = d3.scaleSequential()
+    .domain([PVminData, PVmaxData])
+    .interpolator(d3.interpolate("#2980B9", "#C0392B"));
+  // scale for the map tiling
+  const mapXScale = d3.scaleBand()
+    .domain(col)
+    .range([0, mapWidth])
+    .padding(0.01);
+  const mapYScale = d3.scaleBand()
+    .domain(row)
+    .range([0, mapHeight])
+    .padding(0.01);
+  // tooltips!
+  const tooltip = d3.select("body")
+    .append("div")
+    .attr("id", "tooltip")
+    .style("opacity", 0);
+  // these get called later - believe these are artifacts from replicating example code - need to check their usage and see if they need to change, as this is not usually my approach
+  var margin = {
+    top: 10,
+    right: 10,
+    bottom: 10,
+    left: 10
+  };
+
+  // defining features for the line coordinate function - the shade version was an attempt to draw the grey shadows, which only works a little right now - Im thinking that the better way to manage that down the road is probably to pull the coordinates from those generated for the base star, but that's a detail for later.
+  const features = ["Value1", "Gap", "Value2", "Gap", "Value3", "Gap", "Value4", "Gap", "Value5", "Gap", "Value1"];
+  const shadeures = ["Center", "Gap", "Value2", "Center", "Gap", "Value3", "Center", "Gap", "Value4", "Center", "Gap", "Value5", "Center", "Gap", "Value1", "Center"];
+
+  const opFeatures = ["OI Overall", "Gap", "OI Economy", "Gap", "OI Education", "Gap", "OI Community", "Gap", "OI Health", "Gap", "OI Overall"];
+
+  // RADIAL SCALES TO CREATE INNER CIRCLES VIA TICKS
+  // back and forth on the min being -5 or -4 - will have to take one last look  - - - making max 10.5 creates a buffer arouNd circle within svg - check this
+  // the range is radius so can be tied to svg size as variable -M
+
+  // FOR THE MAP
+  const radialScale = d3.scaleLinear()
+    .domain([-5, 10.5])
+    .range([0, (.5 * (mapXScale.bandwidth()))]);
+  // FOR THE BASE STAR
+  const radialScaleB = d3.scaleLinear()
+    .domain([-5, 10.5])
+    .range([0, baseW / 2]);
+  // FOR THE SINGLE VERSION - not seen here
+  const radialScaleS = d3.scaleLinear()
+    .domain([-5, 10.5])
+    .range([0, singleW / 2]);
+
+  // by doing Ticks in reverse, the circles stack on top of each other - M
+  const ticks = [10, 8, 6, 4, 2, 0];
+
+  // LATER review:
+  // for ticks - and the circles tied to them - can / should I build them with math that makes them a little smaller than space - and then of course there's the donut...
 
 
-  baseStar.selectAll("svg")
-    .attr("id", d => d.code)
-    .each(function(d) {
-      console.log(d)
-      var svg = d3.select(this)
+  // ------------------------------------------ BRING IN THE CSV
+  // removed the grid of multiples t use map instead- it's back in the 24 Mar Proto
+  d3.csv("AP_CSV_test_27Mar.csv").then(dataset => {
+    // have to wrap the functions inside the csv, since one of them calls dataset
 
-      svg.append("text")
-        .attr("x", 10)
-        .attr("y", 18)
-        .text(d => d.state);
+    // ------------------------- FUNCTIONS -----------------------------
+    // these are piling up - should look for a way to combine all - or at least some aspect
+    // Calculating coordinates - original inisght (including trig) courtesy of Danny Yang on Observable?
+    // In each case, the first one listed plots the point on the radial axis, the second one creates the coordinates, in part using the first one
+    // FOR LEGEND - not sure why I have radialScale here - and not certain it should work - but it does -  need to take a look
+    function angleToCoordLegend(angle, value) {
+      let x = Math.cos(angle) * radialScale(value);
+      let y = Math.sin(angle) * radialScale(value);
+      return {
+        "x": legendW / 2 + x,
+        "y": legendH / 2 - y
+      };
+    }
 
-      svg.append("path")
-        .datum(getPathCoordBase(d))
-        .attr("d", singLine)
+    function getPathCoordLegend(starData) {
+      let coordinates = [];
+      for (var i = 0; i < features.length; i++) {
+        let ft_name = features[i];
+        let angle = (Math.PI / 2) + (2 * Math.PI * i / (features.length - 1));
+        coordinates.push(angleToCoordLegend(angle, starData[ft_name]))
+      }
+      return coordinates;
+    }
+    // for BASE STAR
+    function angleToCoordBase(angle, value) {
+      let x = Math.cos(angle) * radialScaleB(value);
+      let y = Math.sin(angle) * radialScaleB(value);
+      return {
+        "x": (baseW / 2) + x,
+        "y": (baseH / 2 + 20) - y
+      };
+    }
+
+    function getPathCoordBase(starData) {
+      let coordinates = [];
+      for (var i = 0; i < features.length; i++) {
+        let ft_name = features[i];
+        let angle = (Math.PI / 2) + (2 * Math.PI * i / (features.length - 1));
+        // let angle = (Math.PI / 2) + (2 * Math.PI * i / 10);
+        coordinates.push(angleToCoordBase(angle, starData[ft_name]))
+      }
+      return coordinates;
+    }
+    // the attempt to put SHADE on the singles
+    function angleToShadeSing(angle, value) {
+      let x = Math.cos(angle) * radialScaleB(value);
+      let y = Math.sin(angle) * radialScaleB(value);
+      return {
+        "x": (baseW / 2) + x,
+        "y": (baseH / 2 + 20) - y
+      };
+    }
+
+    function getPathShadeSing(starData) {
+      let shadeordinates = [];
+      for (var i = 0; i < 3; i++) {
+        let ft_name = shadeures[i];
+        // Order of operations - PEMDAS
+        let angle = (Math.PI / 2) + (2 * Math.PI * i / 10);
+        shadeordinates.push(angleToShadeSing(angle, starData[ft_name]))
+      }
+      return shadeordinates;
+    }
+    // for SINGLES - not seen here... yet?
+    function angleToCoordSing(angle, value) {
+      let x = Math.cos(angle) * radialScaleS(value);
+      let y = Math.sin(angle) * radialScaleS(value);
+      return {
+        "x": (singleW / 2) + x,
+        "y": (singleH / 2 + 20) - y
+      };
+    }
+
+    function getPathCoordSing(starData) {
+      let coordinates = [];
+      for (var i = 0; i < features.length; i++) {
+        let ft_name = features[i];
+        let angle = (Math.PI / 2) + (2 * Math.PI * i / (features.length - 1));
+        coordinates.push(angleToCoordSing(angle, starData[ft_name]))
+      }
+      return coordinates;
+    }
+    // think this may be an artifact - check later
+    // function angleToAxisCoordinate(angle, value) {
+    //   let x = Math.cos(angle) * radialScale(value);
+    //   let y = Math.sin(angle) * radialScale(value);
+    //   return {
+    //     "x": (d => mapXScale(d.col) + .5 * (mapXScale.bandwidth()) + x),
+    //     "y": (d => mapXScale(d.row) + .5 * (mapXScale.bandwidth()) - y)
+    //   };
+    // }
+    // this one is used for the map - really need to combine.....
+    function angleToCoordinate(angle, value) {
+      let x = Math.cos(angle) * radialScale(value);
+      let y = Math.sin(angle) * radialScale(value);
+      return {
+        "x": (mapXScale(+dataset[i].col) + .5 * (mapXScale.bandwidth())) + x,
+        "y": (mapXScale(+dataset[i].row) + .5 * (mapXScale.bandwidth())) - y
+      };
+    }
+
+    function getPathCoordinates(data_point) {
+      let coordinates = [];
+      for (var i = 0; i < opFeatures.length; i++) {
+        let ft_name = opFeatures[i];
+        let angle = (Math.PI / 2) + (2 * Math.PI * i / (opFeatures.length - 1));
+        coordinates.push(angleToCoordinate(angle, data_point[ft_name]))
+      }
+      return coordinates;
+    }
+
+
+// This set I just added as an attempt to draw two sets of stars and then play with visibility at the end - it works, but seems way too cumbersome
+    function angleToCoordinateTwo(angle, value) {
+      let x = Math.cos(angle) * radialScale(value);
+      let y = Math.sin(angle) * radialScale(value);
+      return {
+        "x": (mapXScale(+dataset[i].col) + .5 * (mapXScale.bandwidth())) + x,
+        "y": (mapXScale(+dataset[i].row) + .5 * (mapXScale.bandwidth())) - y
+      };
+    }
+
+    function getPathCoordinatesTwo(data_point) {
+      let coordinates = [];
+      for (var i = 0; i < features.length; i++) {
+        let ft_name = features[i];
+        let angle = (Math.PI / 2) + (2 * Math.PI * i / (features.length - 1));
+        coordinates.push(angleToCoordinateTwo(angle, data_point[ft_name]))
+      }
+      return coordinates;
+    }
+
+
+
+    // --------------------------------------- BUILDING THE BASE STAR GRAPHIC FOR THE INTRO
+    // again, may not need to use margin values - can clean up?
+    // can go inside csv, but not required
+
+    baseStar.selectAll("svg")
+      .data(datasetB)
+      .enter()
+      .append("svg")
+      // .style("margin-bottom", "10px")
+      .attr("width", baseW + margin.left + margin.right)
+      .attr("height", baseH + 10 + margin.top + margin.bottom)
+      .attr("class", "base");
+
+    ticks.forEach(t =>
+      baseStar.selectAll("svg.base")
+      .append("circle")
+      .attr("cx", baseW / 2)
+      .attr("cy", (baseH / 2) + 20)
+      .attr("fill", "#5d4b61")
+      .attr("stroke", "white")
+      .attr("stroke-opacity", 0.35)
+      .attr("r", radialScaleB(t))
+    );
+
+    baseStar.selectAll("svg")
+      .attr("id", d => d.code)
+      .each(function(d) {
+        console.log(d)
+        var svg = d3.select(this)
+
+        svg.append("path")
+          .datum(getPathCoordBase(d))
+          .attr("d", singLine)
+          .attr("stroke-width", 1)
+          .attr("stroke", "grey")
+          .attr("fill", "white")
+          .attr("stroke-opacity", 1)
+          .attr("opacity", 0.8)
+        console.log(singLine);
+
+        svg.append("path")
+          .datum(getPathShadeSing(d))
+          .attr("d", shadeLine)
+          .attr("stroke-width", 1)
+          // .attr("stroke", "grey")
+          .attr("fill", "grey")
+          .attr("stroke-opacity", 1)
+          .attr("opacity", 0.25);
+      });
+
+    // --------------------------------------- BUILD THE LEGEND
+    // can go inside csv, but not required
+// create the ticks
+    ticks.forEach(t =>
+      mapLegend.selectAll()
+      .data(datasetB)
+      .enter()
+      .append("circle")
+      .attr("cx", legendW / 2)
+      .attr("cy", legendH / 2)
+      .attr("fill", (d => PVColor(+d.PurpleValue)))
+      .attr("class", "starTick")
+      .attr("stroke", "white")
+      .attr("stroke-opacity", 0.15)
+      .attr("r", radialScale(t))
+    );
+// create the svg
+    mapLegend.selectAll("svg")
+      .data(datasetB)
+      .enter()
+      .append("svg")
+      .attr("width", legendW + margin.left + margin.right)
+      .attr("height", legendH + 10 + margin.top + margin.bottom);
+// run through features and create coordinates to draw axis label
+    for (var i = 0; i < features.length; i++) {
+      let point = points[i];
+      console.log(point);
+      let angle = (Math.PI / 2) + (2 * Math.PI * i / ((features.length - 1) / 2));
+      let line_coordinate = angleToCoordLegend(angle, 10);
+      let label_coordinate = angleToCoordLegend(angle, 14);
+// label the points - again, think this is too many steps to label, but d3 does not default to handling these well
+      const legendLabel = mapLegend.append("text")
+        .attr("x", label_coordinate.x)
+        .attr("y", label_coordinate.y + 5)
+        .text(point)
+        .attr("text-anchor", "middle")
+        .attr("class", "legLabel");
+    }
+// i should check - I think I may not need all these steps for the legend - not top of the list right now
+    mapLegend.selectAll("svg")
+      .attr("id", d => d.code)
+      .each(function(d) {
+        console.log(d)
+        var svg = d3.select(this)
+
+        svg.append("path")
+          .datum(getPathCoordLegend(d))
+          .attr("d", line)
+          .attr("stroke-width", 1)
+          .attr("stroke", "grey")
+          .attr("fill", "white")
+          .attr("stroke-opacity", 1)
+          .attr("opacity", 0.8)
+        console.log(line);
+      });
+
+
+
+
+
+    // -------------------------------------- BUILD THE MAP AND STAR
+    // Need to look at how this fits in window. need to be smaller?
+    // Map Ticks and tooltips
+    ticks.forEach(t =>
+      mapSVG1.selectAll()
+      .data(dataset)
+      .enter()
+      .append("circle")
+      .attr("cx", d => mapXScale(d.col) + .5 * (mapXScale.bandwidth()))
+      .attr("cy", d => mapXScale(d.row) + .5 * (mapXScale.bandwidth()))
+      .attr("fill", (d => PVColor(+d.PurpleValue)))
+      .attr("class", "starTick")
+      .attr("stroke", "white")
+      .attr("stroke-opacity", 0.15)
+      .attr("r", radialScale(t))
+      .attr("class", "purpleCircle")
+      .on("mouseover", (event, d) => {
+        d3.selectAll("#tooltip")
+          .transition()
+          .duration(300)
+          .style("opacity", 1)
+          .style("left", (event.pageX + 2) + "px")
+          .style("top", (event.pageY + 2) + "px")
+          .text(d.state + " Tooltip")
+          .style("visibility", "visible")
+          .style("opacity", .85);
+      })
+      .on("mouseout", (event, d) => {
+        d3.selectAll("#tooltip")
+          .style("visibility", "hidden")
+      })
+    );
+
+// this is not necessary, as I'm not using line or label coordinates, but keeping here to be safe
+    // for (var i = 0; i < opFeatures.length; i++) {
+    //   let ft_name = opFeatures[i];
+    //   let angle = (Math.PI / 2) + (2 * Math.PI * i / ((opFeatures.length - 1) / 2));
+    //   let line_coordinate = angleToAxisCoordinate(angle, 10);
+    //   // not using labels now. but this would manage that later
+    //   let label_coordinate = angleToAxisCoordinate(angle, 10.5);
+    // }
+
+    // LOOPS THROUGH THE STATES AND PLOTS THE MAP STAR COORDINATES
+    for (var i = 0; i < dataset.length; i++) {
+      let d = dataset[i];
+      console.log(d);
+      console.log(dataset[i].col);
+
+      // console.log(d.col);
+      // need this to become an array again? (think this is artifcat - revisit later)
+
+      let coordinates = getPathCoordinates(d);
+      let coordinatesTwo = getPathCoordinatesTwo(d);
+
+
+      // ACTUALLY DRAWS THE PATH
+      mapSVG1.append("path")
+        .datum(coordinates)
+        .attr("d", line)
         .attr("stroke-width", 1)
         .attr("stroke", "grey")
         .attr("fill", "white")
         .attr("stroke-opacity", 1)
-        .attr("opacity", 0.8);
+        .attr("opacity", 0.8)
+        .attr("visibility", "visible")
+        .attr("class", "mapStarPath");
+      // added the ID for later use
+      // .attr("id", "StateStar");
+      // HOW I TEST IF THIS IS WORKING - LOG COORDINATES
+      // console.log(coordinates);
+      // }
 
-      svg.append("path")
-        .datum(getPathShadeSing(d))
-        .attr("d", shadeLine)
+
+      // ** CAN
+      // Here, to test out toggling values for Some Other, I'm creating a second path - using a different 5 values from the csv - but hiding it to reveal later - cumbersome
+      mapSVG1.append("path")
+        .datum(coordinatesTwo)
+        .attr("d", line)
         .attr("stroke-width", 1)
-        // .attr("stroke", "grey")
-        .attr("fill", "grey")
+        .attr("stroke", "grey")
+        .attr("fill", "white")
         .attr("stroke-opacity", 1)
-        .attr("opacity", 0.25);
-
-
-      svg.append("text")
-        .attr("x", baseW / 2)
-        .attr("y", (baseH / 2) + 25)
-        .attr("text-anchor", "middle")
-        .attr("fill", "grey")
-        .text(d => d.code);
-
-    });
-
-  ;
-
-
-d3.csv("AP_CSV_test_21Mar.csv").then(dataset => {
-
-  singleTest.selectAll("svg")
+        .attr("opacity", 0.8)
+        .attr("visibility", "hidden")
+        .attr("class", "someOtherPath");
+    }
+// label the stars with postal codes
+    const mapLabels = mapSVG1.selectAll()
       .data(dataset)
       .enter()
-      .append("svg")
-      // .style("margin-bottom", "10px")
-      .attr("width", singleW + margin.left + margin.right)
-      .attr("height", singleH + 10 + margin.top + margin.bottom)
-      .attr("class","single");
-
-      ticks.forEach(t =>
-        singleTest.selectAll(".single")
-        .append("circle")
-        .attr("cx", singleW / 2)
-        .attr("cy", (singleH / 2)+20)
-        .attr("fill", (d => PVColor(+d.PurpleValue)))
-        .attr("stroke", "white")
-        .attr("stroke-opacity", 0.35)
-        .attr("r", radialScaleS(t))
-        .attr("class","purpleCircle")
-        .on("mouseover", (event, d)=> {
-          d3.selectAll("#tooltip")
-            .transition()
-            .duration(300)
-            .style("opacity", 1)
-            .style("left", (event.pageX + 2) + "px")
-            .style("top", (event.pageY + 2) + "px")
-            .text(d.state + " Tooltip")
-            .style("visibility", "visible")
-            .style("opacity", .85);
-          })
-          .on("mouseout", (event, d)=> {
-            d3.selectAll("#tooltip")
-              .style("visibility", "hidden")}
-          )
-      );
-      d3.selectAll("input[value='regVoters']")
-        .on("change", (event, d) => {
-          d3.selectAll(".purpleCircle")
-            .attr("fill", (d => PVColor(+d.PurpleValue)))
-
-        });
-        d3.selectAll("input[value='pres2020']")
-          .on("change", (event, d) => {
-            d3.selectAll(".purpleCircle")
-              .attr("fill", (d => PVColor(+d.Biden)))
-          });
+      .append("text")
+      .attr("x", d => mapXScale(d.col) + .5 * (mapXScale.bandwidth()))
+      .attr("y", d => mapXScale(d.row) + .5 * (mapXScale.bandwidth()) + 5)
+      .attr("text-anchor", "middle")
+      .attr("class", "mapCodes")
+      .text(d => d.code);
 
 
-singleTest.selectAll("svg")
-    .attr("id",d=>d.code)
-    .each(function(d){
-    // .each(d => d){
-      console.log(d)
-      var svg = d3.select(this)
-      // .attr("fill", "green")
-      // svg.append("path")
-// https://www.youtube.com/watch?v=AlIariX1eXI
+    // **CAN:
+    // Here's the Functionality for the Toggles above the map.
+    // Changing the circle color from d.PurpleValue (which is just Registered Voters from Pew for now) to d.Biden works fine, and I think is the right way to toggle that
+    // The thing I am trying with visibility was the first exploration to seeing how I could change the visibility of a path as a way of showing different paths on one map - this would then also require changing all the labels in the legend by getElement - I could pull that off with two values, but I'd like to have more options than that...
+    // Presumably there is a much easier way to do this through LoDash or some such?
 
+    d3.selectAll("input[value='regVoters']")
+      .on("change", (event, d) => {
+        d3.selectAll(".purpleCircle")
+          .attr("fill", (d => PVColor(+d.PurpleValue)))
+      });
+    d3.selectAll("input[value='pres2020']")
+      .on("change", (event, d) => {
+        d3.selectAll(".purpleCircle")
+          .attr("fill", (d => PVColor(+d.Biden)))
+      });
 
-      svg.append("text")
-        .attr("x",10)
-        .attr("y",18)
-        .text(d=>d.state);
-
-        svg.append("path")
-                // .datum(stars)
-                .datum(getPathCoordSing(d))
-                .attr("d",singLine)
-                .attr("stroke-width", 1)
-                .attr("stroke", "grey")
-                .attr("fill", "white")
-                .attr("stroke-opacity", 1)
-                .attr("opacity", 0.8)
-              // }
-;
-
-      svg.append("text")
-        .attr("x", singleW / 2)
-        .attr("y", (singleH / 2)+25)
-        .attr("text-anchor", "middle")
-        // .attr("fill", "blue")
-        .attr("fill", "grey")
-        // .text("bacon");
-        .text(d=>d.code);
-    })
-
-    ;
-
-
-
-
-
-
-
-
-  // END OF CSV
+    d3.selectAll("input[value='Opportunity']")
+      .on("change", (event, d) => {
+        d3.selectAll(".mapStarPath")
+          .attr("visibility", "visible")
+        d3.selectAll(".someOtherPath")
+          .attr("visibility", "hidden")
+      });
+    d3.selectAll("input[value='SomeOther']")
+      .on("change", (event, d) => {
+        d3.selectAll(".someOtherPath")
+          .attr("visibility", "visible")
+        d3.selectAll(".mapStarPath")
+          .attr("visibility", "hidden")
       });
 
 
+    // END OF CSV
+  });
 </script>
 
 </html>
