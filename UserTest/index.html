@@ -1,0 +1,2176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>AP Proto 27Apr21_2</title>
+
+  <script type="text/javascript" src="https://d3js.org/d3.v6.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.15.0/lodash.min.js"></script>
+
+  <!-- <script src="d3.js"></script>
+  <script src="lodash.js"></script> -->
+
+  <!-- Some day, maybe look at favicon as well.... Just a star.... -->
+
+  <style type="text/css">
+    /* includes styles for some other pages. will no doubt eventually place as separate file with link */
+
+    body {
+      background-image: linear-gradient(180deg, #FFBF00, #F2F0E6);
+      background-repeat: no-repeat;
+      margin: auto;
+      margin-bottom: 0px;
+    }
+
+    .navbar {
+      width: "1000px";
+      height: "100px";
+      color: white;
+      text-align: right;
+      padding: 10px 30px 0px 0px;
+    }
+
+    .line {
+      fill: none;
+      stroke: #426789;
+      stroke-width: 2px;
+    }
+
+    .introMaster {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .display {
+      flex: 1 1 35%;
+      margin-top: 30px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .title {
+      /* text-align: center; */
+      flex: 1 1 150px;
+      display: flex;
+      height: 300px;
+      /* justify-content: center; */
+      align-items: center;
+      font-size: 2.5em;
+      text-transform: uppercase;
+      padding: 100px 0px 0px 60px;
+      letter-spacing: 3px;
+      color: white;
+    }
+
+    /* https://www.w3schools.com/css/css_align.asp */
+
+    .introContainer {
+      flex: 1 1 600px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .intro {
+      flex: 2 2;
+      padding: 0px 70px 30px 60px;
+      /* text-align: center; */
+      font-family: sans-serif;
+      font-size: 14pt;
+      color: white;
+      line-height: 1.35;
+      /* text-shadow: 0px 0px darkslategrey; */
+      /* color: darkslategrey; */
+    }
+
+    .sideBar {
+      font-size: 11pt;
+      flex: 1 1;
+      margin-right: 20px;
+      color: darkslategrey;
+    }
+    .sideBar a{
+      color: darkslategrey;
+    }
+
+    #baseStarContainer {
+      flex: 1 1;
+      margin-right: 30px;
+    }
+
+    main {
+      background-image: url("unsplash_collage_2_sm_fade.png");
+      max-width: 900px;
+      background-repeat: no-repeat;
+      /* height: 800px; */
+      margin: auto;
+      margin-bottom: 60px;
+    }
+
+    /* general heads */
+    .aHead {
+      font-family: sans-serif;
+      color: darkslategrey;
+      font-size: 13pt;
+      padding: 0px 0px 10px 0px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      }
+
+    .subhead {
+      font-family: sans-serif;
+      color: darkslategrey;
+      font-size: 18pt;
+      padding: 0px 0px 10px 0px;
+      /* border-top: 1px solid darkslategrey; */
+    }
+
+
+    /* for the map and legend */
+    .mapContainer {
+      position: relative;
+      margin: auto;
+      width: 800px;
+      /* text-align: center; */
+      border-top: 1px solid white;
+      padding: 25px 50px 25px 50px;
+    }
+
+    .legendControl {
+      margin: 0px 0px 10px 0px;
+      display: flex;
+      flex-direction: row;
+      border-top: 1px solid white;
+      padding-top: 10px;
+      font-size: .9em;
+    }
+
+    /* can probably make these next two a class? */
+    #purpleTog {
+      color: darkslategrey;
+      flex: 0 0 20%;
+      font-size: 13px;
+      font-family: sans-serif;
+      padding: 0px 10px 5px 10px;
+    }
+
+    #starTog {
+      color: darkslategrey;
+      flex: 0 0 11%;
+      font-family: sans-serif;
+      padding: 5px 0px 0px 0px;
+    }
+
+    .legend {
+      flex: 0 0 13%;
+      font-size: 13px;
+    }
+
+    .legendKey {
+      flex: 0 0 25%;
+      font-family: sans-serif;
+      line-height: 1.4;
+      color: darkslategrey;
+      font-size: 13px;
+      padding-left: 10px;
+    }
+
+    .toggleLabel {
+      font-family: sans-serif;
+      color: darkslategrey;
+      font-size: 10pt;
+      /* padding-left: 0px;
+      margin-left: 0px; */
+    }
+
+    .legLabel {
+      font-family: sans-serif;
+      fill: darkslategrey;
+      font-size: 10pt;
+    }
+
+    .instruction {
+      font-family: sans-serif;
+      font-weight: bold;
+      color: darkslategrey;
+      font-size: 10pt;
+      padding-top: 5px;
+      /* padding-left: 0px;
+      margin-left: 0px; */
+    }
+
+    .mapTitle {
+      text-align: center;
+      font-size: 24px;
+    }
+
+    .mapCodes {
+      font-family: sans-serif;
+      font-size: 10pt;
+      fill: grey;
+    }
+
+    #mapSVG1 {
+      margin: auto;
+    }
+
+    /* comapring states Divs */
+
+    .compareStates {
+      display: flex;
+      flex-direction: row;
+      margin: auto;
+      margin-bottom: 40px;
+      font-family: sans-serif;
+      color: darkslategrey;
+      padding: 10px 0px 10px 0px;
+      border-top: 1px solid darkslategrey;
+    }
+
+    .compareBody {
+      flex: 1 1 34%;
+      font-size: 1em;
+      line-height: 1.35;
+      padding-left: 10px;
+      padding-right: 2em;
+      margin-block-start: 0em;
+      margin-block-end: 0.2em;
+    }
+
+    .soloStateHome {
+      height: auto;
+      flex: 1 1 33%;
+      font-family: sans-serif;
+      border-left: 1px solid white;
+      padding: 0px 20px 20px 20px;
+    }
+
+    .singStName {
+      font-family: sans-serif;
+      fill: darkslategrey;
+      font-size: 18pt;
+    }
+
+    .compName {
+      font-family: sans-serif;
+      fill: darkslategrey;
+      font-size: 18pt;
+    }
+
+    .compData {
+      font-size: 12pt;
+      padding-bottom: 3px;
+    }
+    .compData p{
+      margin-block-start: 0em;
+      margin-block-end: 0em;
+      padding-bottom: 5px;
+    }
+
+    .singStData {
+      font-weight: bold;
+    }
+
+    .stateRegions {
+      /* height: 400px; */
+      flex: 0 0 66%;
+      font-family: sans-serif;
+      border-left: 1px solid darkslategrey;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+
+    .regStLabel {
+      fill: darkslategrey;
+      font-size: .8em;
+    }
+
+    .listSelect {
+      color: darkslategrey;
+      background-color: cornsilk;
+      /* background-color: lightslategrey; */
+      height: 20px;
+      margin: 3px 0px 5px 0px;
+    }
+
+    /* .stateDropdown {
+      background-color: red;
+    } */
+    .selectHead {
+      font-size: .85em;
+    }
+
+
+    /* footer */
+
+    .credit {
+      font-size: 14px;
+      color: darkslategrey;
+      text-align: center;
+      font-family: "Helvetica", sans-serif;
+    }
+
+    /* for the individual stars */
+    /* Need to look up some tooltips formatting. They are tricky in terms of line breaks and such*/
+    div.tooltip {
+      /* position: absolute; */
+      flex: 0 0 35%;
+      color: darkslategrey;
+      /* width: 150px; */
+      height: auto;
+      /* padding-left: 10px; */
+      text-align: left;
+      font-family: sans-serif;
+      font-size: 15px;
+      /* background: white; */
+      /* visibility: hidden; */
+      /* padding: 5px; */
+      z-index: 9;
+    }
+
+    .tipTitle {
+      font-family: sans-serif;
+      font-weight: bold;
+      color: darkslategrey;
+      font-size: 14pt;
+      padding: 0px 0px 10px 0px;
+    }
+
+
+    .line {
+      fill: none;
+      stroke: #426789;
+      stroke-width: 2px;
+    }
+
+    #singleTest {
+      max-width: 1000px;
+      margin: auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .narrative {
+      margin: auto;
+      margin-bottom: 20px;
+      font-family: sans-serif;
+      color: darkslateblue;
+      padding: 10px 80px 10px 60px;
+      border-top: 1px solid darkslategrey;
+    }
+
+    .narrativeBody {
+      color: darkslategrey;
+      /* color: midnightblue; */
+      font-size: 12pt;
+      line-height: 1.5;
+      margin-block-start: 0em;
+      margin-block-end: 0em;
+    }
+
+
+    /* flex - just for reference
+    https://css-tricks.com/snippets/css/a-guide-to-flexbox/ */
+  </style>
+</head>
+
+<body>
+
+  <main>
+
+    <div class="navbar"></div>
+    <!-- Presuming that I eventually want a nav bar and don't just go with a continuous scroll... -->
+
+    <div width="1000px" height="200px" class="introMaster">
+
+      <div class="introContainer">
+
+        <div class="title">
+          Every Purple Flaw
+        </div>
+
+        <div class="intro">
+          <p>It is common in the U.S. today to readily speak of 'red,' 'purple,' and 'blue' states, as if these are monoliths with the same characteristics. Similar presumptions are made when residents speak of regions such as 'the Coasts' or
+            'the South,' 'the Rust Belt' or 'the Bible Belt.' In fact, all states are mixtures of blue and red, and shared characteristics exist between the deepest red and the brightest blue.</p>
+          <p class="narrativeBody">With this in mind, this project presents a series of state portraits, each created using rankings (50th to 1st) from the 2021 U.S. News and World Reports Best States platform, and supplemented by data from the U.S. Census Bureau and the Bureau of
+            Economic Analysis. Each portrait consists of a 'Purple Value' and five star points, with larger points being indicative of a higher ranking — and therefore generally pereceived as 'more desirable' for residents.</p><br>
+          <p class="narrativeBody">You are encouraged to read through, examine the relationships presented here and create some comparisons of your own to find links where they were perhaps not expected. You will no doubt also find that no star in the union is perfect.
+          </p>
+        </div>
+
+      </div>
+
+      <div class="display">
+
+        <div width="300px" id="baseStarContainer">
+          <svg width="300" height="300" id="baseStar"></svg>
+
+        </div>
+
+        <div class="sideBar">
+          <p>Sources and Inspiration:</p>
+          <p>To better understand the methodology behind the Best States platform and the categories utilized, please visit the U.S. News <a href="https://www.usnews.com/news/best-states/rankings" target="_blank" rel="noopener noreferrer">website</a>. Supplementary data was
+            taken from the U.S. Census Bureau and the U.S. Bureau of Econimic Analysis. Except where noted, all data is primarily from 2019 numbers.</p>
+          <p> The initial Purple Value is from the Cook Political Report's <a href="https://cookpolitical.com/" target="_blank" rel="noopener noreferrer">Partisan Voting Index</a></p>
+          <!-- https://www.usnews.com/news/best-states?int=top_nav_Home -->
+          <p>The color scheme and other inspiration come from America the Beautiful, by Katharine Lee Bates. You can read more about her life <a href="https://www.nps.gov/people/katharine-lee-bates.htm" target="_blank" rel="noopener noreferrer">here</a> and check out Ray
+            Charles' doing it justice <a href="https://www.youtube.com/watch?v=TRUjr8EVgBg" target="_blank" rel="noopener noreferrer">here</a>.</p>
+          <p>The background image, featuring amber waves and alabaster-cities-turned-purple-mountains owes no small debt to Agnes Denes' <a href="https://www.architecturaldigest.com/story/agnes-denes-prophetic-wheatfield-remains-as-relevant-as-ever">"Wheatfield – A Confrontation"</a> (1982.)
+
+          <!-- https://www.songhall.org/profile/Katharine_Lee_Bates -->
+          <!-- https://www.freecodecamp.org/news/how-to-use-html-to-open-link-in-new-tab/ -->
+        </div>
+      </div>
+
+    </div>
+
+    <div class="narrative">
+      <div class="aHead">For Starters</div>
+      <p class="narrativeBody">Let's begin with the broad view of the country — 'sea to shining sea' as it were. For this and the sections that follow, each point represents a select metric within the U.S. News rankings. Different related sets can then be explored and compared — as can different 'Purple Values' — using the dropdown menus.</p>
+    </div>
+
+
+    <div class="legendControl" style="border-top: 1px solid darkslategrey; padding: 10px 0px 10px 10px;">
+      <!-- One toggle for purple background -->
+      <div class="tooltip" id="legTip"> <span class="subhead">An Overview of the States </span><span class="instruction">Click on a state for more information. <br/> Doubleclick to reset.</span></div>
+
+      <div id="purpleTog">
+        <span>Select a Purple Value:</span><br>
+        <select class="listSelect" id="purpleSelect"></select><br>
+
+
+        <!-- One toggle for star path values - in theory-->
+        <div id="starTog">
+          <span>Select Values to Map:</span><br>
+          <select class="listSelect" id="rankSelect"></select><br>
+        </div>
+      </div>
+
+      <div class="legend">
+        <!-- Legend example goes here -->
+        <svg width="150px" height="110px" id="mapLegend"></svg>
+      </div>
+
+      <!-- **CAN
+part of the goal here is linking something like this legendKey to automatically update when path values (presumably pulled from the csv) are changed - more on this farther down - Note: If I had my way, I would have the labels right next to the points, but d3's defaults in this regard make that untenable-->
+
+      <div class="legendKey">
+        <span style="font-weight:bold" id="legValTitle">Overview</span><br>
+        A: <span id="legValA">Overall Rank</span><br>
+        B: <span id="legValB">Health Care</span><br>
+        C: <span id="legValC">Education</span><br>
+        D: <span id="legValD">Economy</span><br>
+        E: <span id="legValE">Infrastructure</span><br>
+      </div>
+
+    </div>
+
+    <div class="mapContainer" id="mapCo">
+      <svg width="900px" height="600px" id="mapSVG1"></svg>
+    </div>
+
+    <!-- TRANSITION TEXT -->
+    <div class="narrative">
+      <div class="aHead">For Comparison</div>
+      <p class="narrativeBody">Now let's look at some of those states one-on-one. The graphs below show select comaprisons on some of the topics seen in the map and allow you to explore different states and Purple Values. As you review, start by
+        thinking of a state you know, perhaps one you have lived in or visited often. Then think of one you don't know well — or that you think you know.</p>
+    </div>
+
+    <div class="compareStates">
+
+      <div class="compareBody">
+        <div class="subhead">The Best and Least Best</div>
+        <!-- <div class="subhead">Looking at Health Care</div> -->
+      Based on the U.S. News rankings, there is a clear difference between the top and bottom of the list. With few exceptions, Washington ranks in the top half of almost all 70-plus individual categories, while Louisiana is in the bottom half. The
+        B through E values on these graphs are the most heavily weighted topics in the overall ranking. Use the dropdown menus below to see how other states compare to each other, and how they rank in each of those individual areas.<br><br>
+        A = Overall Rank<br>
+        B = Health Care<br>
+        C = Education<br>
+        D = Economy<br>
+        E = Infrastructure<br>
+        <br>
+        <span class="selectHead">Select a Purple Value:</span><br>
+        <select class="listSelect" id="compOnePurp"></select><br>
+        <span class="selectHead">Select two other States:</span><br>
+        <select class="listSelect" id="stListSelectOne"></select> <select class="listSelect" id="stListSelectTwo"></select><br>
+      </div>
+
+      <div class=soloStateHome>
+        <div class="compName" id="compOneName">State</div>
+        <svg width="200" height="190" id="stCompOne"></svg>
+        <div class="compData" id="compOneData">Other Data</div>
+      </div>
+
+      <div class=soloStateHome>
+        <div class="compName" id="compTwoName">State</div>
+        <svg width="200" height="190" id="stCompTwo"></svg>
+        <div class="compData" id="compTwoData">Other Data</div>
+      </div>
+    </div>
+
+
+    <div class="compareStates">
+
+      <div class="compareBody">
+        <div class="subhead">Looking at Economy</div>
+        A = GDP Growth<br>
+        B = Job Growth<br>
+        C = Employment<br>
+        D = Business Environment<br>
+        E = Net Migration<br>
+        <hr>
+        Two Western states, 'Red' Utah and 'Blue' Colorado lead the Economy rankings. The five points on these stars are just a few of what contribute to those overall rankings, and as you can see, it's a tight race. Note that additional data from the BEA, such as GDP and per capita income tell a more complex story. Take a minute to review and compare some other states to see how their economies are looking.<br>
+        <br>
+        <span class="selectHead">Select a Purple Value:</span><br>
+        <select class="listSelect" id="compTwoPurp"></select><br>
+        <span class="selectHead">Select two other states:</span><br>
+        <select class="listSelect" id="stListSelectThree"></select> <select class="listSelect" id="stListSelectFour"></select><br>
+
+      </div>
+
+      <div class=soloStateHome>
+        <div class="compName" id="compThreeName">State</div>
+        <svg width="200" height="190" id="stCompThree"></svg>
+        <div class="compData" id="compThreeData">Other Data</div>
+      </div>
+
+      <div class=soloStateHome>
+        <div class="compName" id="compFourName">State</div>
+        <svg width="200" height="190" id="stCompFour"></svg>
+        <div class="compData" id="compFourData">Other Data</div>
+      </div>
+    </div>
+
+    <!-- Regions -->
+    <div class="compareStates">
+
+      <div class="compareBody">
+        <div class="subhead">Infrastructure by Region</div>
+
+        The regions listed below are a mixture of official Census Bureau designations ("The South") and more colloquial designations ("The Coasts"), each of which have members that might seem off-base to those who know a state well — or not at all. But within these groupings, star points are all over the place, with the individuality of states making almost any attempt at true generalization extremely difficult.
+        <br><br>
+        A = Power Grid Reliability<br>
+        B = Renewable Energy Usage<br>
+        C = Access to Gigabit Internet<br>
+        D = Road Quality<br>
+        E = Public Transit Usage<br>
+        <br>
+        <span class="selectHead">Select a Purple Value:</span><br>
+        <select class="listSelect" id="regOnePurp"></select><br>
+        <span class="selectHead">Select another Region:</span><br>
+        <select class="listSelect" id="regionSelectOne"></select><br>
+
+      </div>
+
+      <div class="stateRegions">
+        <!-- <svg width="600" height="200" id="stCompRegions"></svg> -->
+        <div class="compName" id="regOneName">Region</div>
+        <div width="600" id="stCompRegions"></div>
+      </div>
+
+    </div>
+
+    <!-- Need to create a text block class ? -->
+    <div class="narrative">
+      <div class="aHead">In Conclusion</div>
+      <p class="narrativeBody">There will be text here once other sections have been added. For now this is placeholder. Often referred to as "Greek," this particular text is actually Latin. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam odio lorem, tempor et condimentum eu, tristique ullamcorper lectus. Pellentesque vitae dolor ultrices, sagittis quam et, blandit diam. Maecenas a magna hendrerit, sollicitudin tellus
+      id, consequat neque. Duis fringilla, justo eget rhoncus tristique, felis risus commodo quam, id vestibulum turpis ex.</p>
+    </div>
+
+    <hr>
+    <p class="credit">©2021 Michael L Kelly : All else TK</p>
+
+    <!-- non-map small multiples grid can be found in AP_Home_Proto_24Mar.html
+  Some of their values are stil in this script, which I should probably make a separate file anyway-->
+
+  </main>
+</body>
+
+<script>
+  // for some reason I default to grouping constants, functions, etc. May not be the best idea
+
+  // for all lines - can probably update all to just line - no need for sing and shade
+  const line = d3.line()
+    .x(d => d.x)
+    .y(d => d.y);
+
+  let singLine = d3.line()
+    .x(d => d.x)
+    .y(d => d.y);
+
+  let shadeLine = d3.line()
+    .x(d => d.x)
+    .y(d => d.y);
+
+  // for base Star
+  const baseW = 300;
+  const baseH = 300;
+  const baseStar = d3.select("#baseStar")
+  // dataset for base star - and Legend - since they are complete stars and do not pull from csv
+  const datasetB = [{
+    "Value1": 1,
+    "Gap": 50,
+    "Value2": 1,
+    "Value3": 1,
+    "Value4": 1,
+    "Value5": 1,
+    "Center": 75,
+    "PurpleValue": 50
+    // **** current 'base' PurpleValue is based on those weird registered voter numbers - which again need to be fixed
+  }]
+
+
+  const stCompOne = d3.select("#stCompOne");
+  const stCompTwo = d3.select("#stCompTwo");
+  const stCompThree = d3.select("#stCompThree");
+  const stCompFour = d3.select("#stCompFour");
+  const stCompFive = d3.select("#stCompFive");
+  const stCompSix = d3.select("#stCompSix");
+  const stCompSeven = d3.select("#stCompSeven");
+  const stCompEight = d3.select("#stCompEight");
+
+  const stCompRegions = d3.select("#stCompRegions")
+
+
+  // for legend - including point labels -* which is not the best way to do this, I know
+  const legendW = 150;
+  const legendH = 125;
+  const mapLegend = d3.select("#mapLegend");
+
+  const points = ["A", "B", "C", "D", "E"];
+
+  const stateList = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland",
+    "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania",
+    "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
+  ]
+
+  const regionList = ["The Midwest", "The Northeast", "The Coasts", "The Rust Belt", "The South", "The West", "The Pacific"]
+
+  const rankList = ["Overall", "Health Care", "Education", "Economy", "Infrastructure", "Opportunity", "Crime & Corrections"]
+
+  const purpleList = ["Cook PVI", "2020 Election", "All the Same"]
+  // const purpleList = ["Registered Voters", "2020 Election", "All the Same"]
+
+  // for map, including columns and rows for tiling
+  const mapSVG1 = d3.select("#mapSVG1");
+  const mapWidth = 800;
+  const mapHeight = 600;
+  const col = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const row = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+  // for single Stars
+  const singleW = 150;
+  const singleH = 150;
+  const singleTest = d3.select("#singleTest")
+
+  // for region Stars
+  const regW = 95;
+  const regH = 95;
+
+  // For donuts - not seen here - will need to resolve this with solo star page
+  const outerRadius = 300;
+  const innerRadius = 200;
+  const PDwidth = 600;
+  const PDheight = 600;
+
+  // purple values - using Gallup registerd voters for now, which is why numbers are weird. will normalize when I solidify dataset there
+  // const PVmaxData = 60;
+  // const PVminData = 25;
+  // lower value is blue, higher is red
+  const PVmaxData = 100;
+  const PVmidData = 50
+  const PVminData = 0;
+  const PVColor = d3.scaleLinear()
+    .domain([PVminData, PVmidData, PVmaxData])
+    // .range(["#2980B9", "rebeccapurple", "#C0392B"]);
+    .range(["#2980B9", "#755D72", "#C0392B"]);
+  // const PVColor = d3.scaleSequential()
+  //   .domain([PVminData, PVmaxData])
+  //   .interpolator(d3.interpolate("#2980B9", "#C0392B"));
+
+  // scale for the map tiling
+  const mapXScale = d3.scaleBand()
+    .domain(col)
+    .range([0, mapWidth])
+    .padding(0.01);
+  const mapYScale = d3.scaleBand()
+    .domain(row)
+    .range([0, mapHeight])
+    .padding(0.01);
+  // tooltips!
+  const mapTip = d3.select("#legTip");
+  // .append("div")
+  // .attr("class", "tooltip")
+  // .style("opacity", 0);
+  // these get called later - believe these are artifacts from replicating example code - need to check their usage and see if they need to change, as this is not usually my approach
+  var margin = {
+    top: 10,
+    right: 10,
+    bottom: 10,
+    left: 10
+  };
+
+  // defining features for the line coordinate function - the shade version was an attempt to draw the grey shadows, which only works a little right now - Im thinking that the better way to manage that down the road is probably to pull the coordinates from those generated for the base star, but that's a detail for later.
+  const features = ["Value1", "Gap", "Value2", "Gap", "Value3", "Gap", "Value4", "Gap", "Value5", "Gap", "Value1"];
+  const shadeures = ["Center", "Gap", "Value2", "Center", "Gap", "Value3", "Center", "Gap", "Value4", "Center", "Gap", "Value5", "Center", "Gap", "Value1", "Center"];
+
+  const overFeatTitle = "Overview"
+  const overFeat = ["Overall Rank", "Gap", "Health Care", "Gap", "Education", "Gap", "Economy", "Gap", "Infrastructure", "Gap", "Overall Rank"];
+
+  const healthFeatTitle = "Health Care Values"
+  const healthFeat = ["Health Care Affordability", "Gap", "Hospital Quality", "Gap", "Mental Health", "Gap", "Low Mortality Rate", "Gap", "Health Insurance Enrollment", "Gap", "Health Care Affordability"];
+
+  const eduFeatTitle = "Education Values"
+  const eduFeat = ["4-Year College Graduation Rate", "Gap", "High School Graduation Rate", "Gap", "College Readiness", "Gap", "Low Debt at Graduation", "Gap", "Tuition and Fees", "Gap", "4-Year College Graduation Rate"];
+
+  const econFeatTitle = "Education Values"
+  const econFeat = ["GDP Growth", "Gap", "Job Growth", "Gap", "Employment", "Gap", "Business Environment", "Gap", "Net Migration", "Gap", "GDP Growth"];
+
+  const infraFeatTitle = "Infrastructure"
+  const infraFeat = ["Power Grid Reliability", "Gap", "Renewable Energy Usage", "Gap", "Access to Gigabit Internet", "Gap", "Road Quality", "Gap", "Public Transit Usage", "Gap", "Power Grid Reliability"];
+
+  const opptyFeatTitle = "Opportunity"
+  const opptyFeat = ["Cost of Living", "Gap", "Household Income", "Gap", "Low Poverty Rate", "Gap", "Income Gap by Gender", "Gap", "Income Gap by Race", "Gap", "Cost of Living"];
+
+  const crimeFeatTitle = "Crime and Corrections"
+  const crimeFeat = ["Low Incarceration Rate", "Gap", "Least Juvenile Incarceration", "Gap", "Equality in Jailing", "Gap", "Low Property Crime Rate", "Gap", "Low Violent Crime Rate", "Gap", "Low Incarceration Rate"];
+
+
+  // RADIAL SCALES TO CREATE INNER CIRCLES VIA TICKS
+  // back and forth on the min being -5 or -4 - will have to take one last look  - - - making max 10.5 creates a buffer arouNd circle within svg - check this
+  // the range is radius so can be tied to svg size as variable -M
+
+  // FOR THE MAP
+  const radialScale = d3.scaleLinear()
+    .domain([75, 0])
+    .range([0, (.5 * (mapXScale.bandwidth()))]);
+  // FOR THE BASE STAR
+  const radialScaleB = d3.scaleLinear()
+    .domain([75, 0])
+    .range([0, baseW / 2]);
+  // FOR THE SINGLE VERSION
+  const radialScaleS = d3.scaleLinear()
+    .domain([75, 0])
+    .range([0, singleW / 2]);
+  // FOR THE REGION VERSION
+  const radialScaleR = d3.scaleLinear()
+    .domain([75, 0])
+    .range([0, regW / 2]);
+
+  // by doing Ticks in reverse, the circles stack on top of each other - M
+  const ticks = [0, 10, 20, 30, 40, 50];
+
+  // ------------------------- BRING IN THE CSV
+  d3.csv("AP_CSV_USNWR_23Apr.csv").then(dataset => {
+    // have to wrap the functions inside the csv, since some call dataset
+
+    // ------------------------- FUNCTIONS -----------------------------
+    // these are piling up - should look for a way to combine all - or at least some aspect
+    // UPDATE: looking like that might not be possible
+    // Calculating coordinates - original inisght (including trig) courtesy of Danny Yang on Observable?
+    // In each case, the first one listed plots the point on the radial axis, the second one creates the coordinates, in part using the first one
+    // FOR LEGEND - not sure why I have radialScale here - and not certain it should work - but it does -  need to take a look
+    function angleToCoordLegend(angle, value) {
+      let x = Math.cos(angle) * radialScale(value);
+      let y = Math.sin(angle) * radialScale(value);
+      return {
+        "x": legendW / 2 + x,
+        "y": legendH / 2 - y
+      };
+    }
+
+    function getPathCoordLegend(starData) {
+      let coordinates = [];
+      for (var i = 0; i < features.length; i++) {
+        let ft_name = features[i];
+        let angle = (Math.PI / 2) + (2 * Math.PI * i / (features.length - 1));
+        coordinates.push(angleToCoordLegend(angle, starData[ft_name]))
+      }
+      return coordinates;
+    }
+    // for BASE STAR
+    function angleToCoordBase(angle, value) {
+      let x = Math.cos(angle) * radialScaleB(value);
+      let y = Math.sin(angle) * radialScaleB(value);
+      return {
+        "x": (baseW / 2) + x,
+        "y": (baseH / 2) - y
+      };
+    }
+
+    function getPathCoordBase(starData) {
+      let coordinates = [];
+      for (var i = 0; i < features.length; i++) {
+        let ft_name = features[i];
+        let angle = (Math.PI / 2) + (2 * Math.PI * i / (features.length - 1));
+        // let angle = (Math.PI / 2) + (2 * Math.PI * i / 10);
+        coordinates.push(angleToCoordBase(angle, starData[ft_name]))
+      }
+      return coordinates;
+    }
+    // the attempt to put SHADE on the base star - may never work...
+    function angleToShadeSing(angle, value) {
+      let x = Math.cos(angle) * radialScaleB(value);
+      let y = Math.sin(angle) * radialScaleB(value);
+      return {
+        "x": (baseW / 2) + x,
+        "y": (baseH / 2) - y
+      };
+    }
+
+    function getPathShadeSing(starData) {
+      let shadeordinates = [];
+      for (var i = 0; i < 3; i++) {
+        let ft_name = shadeures[i];
+        // Order of operations - PEMDAS
+        let angle = (Math.PI / 2) + (2 * Math.PI * i / 10);
+        shadeordinates.push(angleToShadeSing(angle, starData[ft_name]))
+      }
+      return shadeordinates;
+    }
+    // for SINGLES - not seen here... yet?
+    function angleToCoordSing(angle, value) {
+      let x = Math.cos(angle) * radialScaleS(value);
+      let y = Math.sin(angle) * radialScaleS(value);
+      return {
+        "x": (singleW / 2 + 20) + x,
+        "y": (singleH / 2 + 20) - y
+      };
+    }
+
+    function getPathCoordSing(starData, feat) {
+      let coordinates = [];
+      for (var i = 0; i < feat.length; i++) {
+        let ft_name = feat[i];
+        let angle = (Math.PI / 2) + (2 * Math.PI * i / (feat.length - 1));
+        coordinates.push(angleToCoordSing(angle, starData[ft_name]))
+      }
+      return coordinates;
+    }
+
+    function angleToCoordReg(angle, value) {
+      let x = Math.cos(angle) * radialScaleR(value);
+      let y = Math.sin(angle) * radialScaleR(value);
+      return {
+        "x": (regW / 2 + 10) + x,
+        "y": (regH / 2 + 25) - y
+      };
+    }
+
+    function getPathCoordReg(starData, feat) {
+      let coordinates = [];
+      for (var i = 0; i < feat.length; i++) {
+        let ft_name = feat[i];
+        let angle = (Math.PI / 2) + (2 * Math.PI * i / (feat.length - 1));
+        coordinates.push(angleToCoordReg(angle, starData[ft_name]))
+      }
+      return coordinates;
+    }
+
+    // this one is used for the MAP - really need to combine..... but can't
+    function angleToCoordMap(angle, value) {
+      let x = Math.cos(angle) * radialScale(value);
+      let y = Math.sin(angle) * radialScale(value);
+      return {
+        "x": (mapXScale(+dataset[i].col) + .5 * (mapXScale.bandwidth())) + x,
+        "y": (mapXScale(+dataset[i].row) + .5 * (mapXScale.bandwidth())) - y
+      };
+    }
+
+    function getPathCoordMap(data_point, feat) {
+      let coordinates = [];
+      for (var i = 0; i < feat.length; i++) {
+        let ft_name = feat[i];
+        let angle = (Math.PI / 2) + (2 * Math.PI * i / (feat.length - 1));
+        coordinates.push(angleToCoordMap(angle, data_point[ft_name]))
+      }
+      return coordinates;
+    }
+
+
+
+    // For changing Purple - to use later and always
+    // only works on Region for now
+
+    function currentPurpleSing(d, currentPurp) {
+      if (currentPurp == "Cook PVI") {
+        console.log(d.PurpleValue);
+        return (PVColor(+d.PurpleValue));
+      } else if (currentPurp == "2020 Election") {
+        console.log(d.Biden);
+        return (PVColor(+d.Biden));
+      } else if (currentPurp == "All the Same") {
+        console.log("All");
+        return (PVColor(50));
+      }
+    }
+
+    function currentPurple(d, currentPurp) {
+      if (currentPurp == "Cook PVI") {
+        console.log(d.PurpleValue);
+        return (d => PVColor(+d.PurpleValue));
+      } else if (currentPurp == "2020 Election") {
+        console.log(d.Biden);
+        return (d => PVColor(+d.Biden));
+      } else if (currentPurp == "All the Same") {
+        console.log("All");
+        return (d => PVColor(50));
+      }
+    }
+
+
+
+
+    // ----------------- BUILDING THE BASE STAR GRAPHIC FOR THE INTRO
+    // again, may not need to use margin values - can clean up?
+
+    baseStar.selectAll("svg")
+      .data(datasetB)
+      .enter()
+      .append("svg")
+      // .style("margin-bottom", "10px")
+      .attr("width", baseW + margin.left + margin.right)
+      .attr("height", baseH + 10 + margin.top + margin.bottom)
+      .attr("class", "base");
+
+    ticks.forEach(t =>
+      baseStar.selectAll("svg.base")
+      .append("circle")
+      .attr("cx", baseW / 2)
+      .attr("cy", baseH / 2)
+      .attr("fill", "#5d4b61")
+      .attr("stroke", "white")
+      .attr("stroke-opacity", 0.35)
+      .attr("r", radialScaleB(t))
+    );
+
+    baseStar.selectAll("svg")
+      .attr("id", d => d.code)
+      .each(function(d) {
+        console.log(d)
+        var svg = d3.select(this)
+
+        svg.append("path")
+          .datum(getPathCoordBase(d))
+          .attr("d", singLine)
+          .attr("stroke-width", 1)
+          .attr("stroke", "grey")
+          .attr("fill", "white")
+          .attr("stroke-opacity", 1)
+          .attr("opacity", 0.8)
+        console.log(singLine);
+
+        svg.append("path")
+          .datum(getPathShadeSing(d))
+          .attr("d", shadeLine)
+          .attr("stroke-width", 1)
+          // .attr("stroke", "grey")
+          .attr("fill", "grey")
+          .attr("stroke-opacity", 1)
+          .attr("opacity", 0.25);
+      });
+
+    // ------------------------------------ BUILD THE LEGEND
+    // create the ticks
+    ticks.forEach(t =>
+      mapLegend.selectAll()
+      .data(datasetB)
+      .enter()
+      .append("circle")
+      .attr("cx", legendW / 2)
+      .attr("cy", legendH / 2)
+      .attr("fill", (d => PVColor(+d.PurpleValue)))
+      .attr("class", "starTick")
+      .attr("stroke", "white")
+      .attr("stroke-opacity", 0.15)
+      .attr("r", radialScale(t))
+    );
+    // create the svg
+    mapLegend.selectAll("svg")
+      .data(datasetB)
+      .enter()
+      .append("svg")
+      .attr("width", legendW + margin.left + margin.right)
+      .attr("height", legendH + 10 + margin.top + margin.bottom);
+    // run through features and create coordinates to draw axis label
+    for (var i = 0; i < healthFeat.length; i++) {
+      let point = points[i];
+      console.log(point);
+      let angle = (Math.PI / 2) + (2 * Math.PI * i / ((healthFeat.length - 1) / 2));
+      let line_coordinate = angleToCoordLegend(angle, 1);
+      let label_coordinate = angleToCoordLegend(angle, -20);
+      // label the points - again, think this is too many steps to label, but d3 does not default to handling these well
+      const legendLabel = mapLegend.append("text")
+        .attr("x", label_coordinate.x)
+        .attr("y", label_coordinate.y + 5)
+        .text(point)
+        .attr("text-anchor", "middle")
+        .attr("class", "legLabel");
+    }
+    // i should check - I think I may not need all these steps for the legend - not top of the list right now
+    mapLegend.selectAll("svg")
+      .attr("id", d => d.code)
+      .each(function(d) {
+        console.log(d)
+        var svg = d3.select(this)
+
+        svg.append("path")
+          .datum(getPathCoordLegend(d))
+          .attr("d", line)
+          .attr("stroke-width", 1)
+          .attr("stroke", "grey")
+          .attr("fill", "white")
+          .attr("stroke-opacity", 1)
+          .attr("opacity", 0.8)
+        console.log(line);
+      });
+
+
+
+
+
+    // -------------------------------------- BUILD THE MAP AND STARS
+    // Need to look at how this fits in window. need to be smaller?
+    // Map Ticks and tooltips
+    ticks.forEach(t =>
+      mapSVG1.selectAll()
+      .data(dataset)
+      .enter()
+      .append("circle")
+      .attr("cx", d => mapXScale(d.col) + .5 * (mapXScale.bandwidth()))
+      .attr("cy", d => mapXScale(d.row) + .5 * (mapXScale.bandwidth()))
+      .attr("fill", (d => PVColor(+d.PurpleValue)))
+      .attr("class", "starTick")
+      .attr("stroke", "white")
+      .attr("stroke-opacity", 0.15)
+      .attr("r", radialScale(t))
+      .attr("class", "mapCircle")
+    );
+
+    // LOOPS THROUGH THE STATES AND PLOTS THE MAP STAR COORDINATES
+
+    for (var i = 0; i < dataset.length; i++) {
+      let d = dataset[i];
+
+      // ACTUALLY DRAWS THE PATH
+      let overMapStars = mapSVG1.append("path")
+        .datum(getPathCoordMap(d, overFeat))
+        .attr("d", line)
+        .attr("stroke-width", 1)
+        .attr("stroke", "grey")
+        .attr("fill", "white")
+        .attr("stroke-opacity", 1)
+        .attr("opacity", 0.8)
+        .attr("visibility", "visible")
+        .attr("class", "overStarPath");
+
+      let healthMapStars = mapSVG1.append("path")
+        .datum(getPathCoordMap(d, healthFeat))
+        .attr("d", line)
+        .attr("stroke-width", 1)
+        .attr("stroke", "grey")
+        .attr("fill", "white")
+        .attr("stroke-opacity", 1)
+        .attr("opacity", 0.8)
+        .attr("visibility", "hidden")
+        .attr("class", "healthStarPath");
+
+      let eduMapStars = mapSVG1.append("path")
+        .datum(getPathCoordMap(d, eduFeat))
+        .attr("d", line)
+        .attr("stroke-width", 1)
+        .attr("stroke", "grey")
+        .attr("fill", "white")
+        .attr("stroke-opacity", 1)
+        .attr("opacity", 0.8)
+        .attr("visibility", "hidden")
+        .attr("class", "eduStarPath");
+
+      let econMapStars = mapSVG1.append("path")
+        .datum(getPathCoordMap(d, econFeat))
+        .attr("d", line)
+        .attr("stroke-width", 1)
+        .attr("stroke", "grey")
+        .attr("fill", "white")
+        .attr("stroke-opacity", 1)
+        .attr("opacity", 0.8)
+        .attr("visibility", "hidden")
+        .attr("class", "econStarPath");
+
+      let infraMapStars = mapSVG1.append("path")
+        .datum(getPathCoordMap(d, infraFeat))
+        .attr("d", line)
+        .attr("stroke-width", 1)
+        .attr("stroke", "grey")
+        .attr("fill", "white")
+        .attr("stroke-opacity", 1)
+        .attr("opacity", 0.8)
+        .attr("visibility", "hidden")
+        .attr("class", "infraStarPath");
+
+      let opptyMapStars = mapSVG1.append("path")
+        .datum(getPathCoordMap(d, opptyFeat))
+        .attr("d", line)
+        .attr("stroke-width", 1)
+        .attr("stroke", "grey")
+        .attr("fill", "white")
+        .attr("stroke-opacity", 1)
+        .attr("opacity", 0.8)
+        .attr("visibility", "hidden")
+        .attr("class", "opptyStarPath");
+
+      let crimeMapStars = mapSVG1.append("path")
+        .datum(getPathCoordMap(d, crimeFeat))
+        .attr("d", line)
+        .attr("stroke-width", 1)
+        .attr("stroke", "grey")
+        .attr("fill", "white")
+        .attr("stroke-opacity", 1)
+        .attr("opacity", 0.8)
+        .attr("visibility", "hidden")
+        .attr("class", "crimeStarPath");
+
+      // This is end of for loop
+    }
+
+    // label the stars with postal codes
+    const mapLabels = mapSVG1.selectAll()
+      .data(dataset)
+      .enter()
+      .append("text")
+      .attr("x", d => mapXScale(d.col) + .5 * (mapXScale.bandwidth()))
+      .attr("y", d => mapXScale(d.row) + .5 * (mapXScale.bandwidth()) + 5)
+      .attr("text-anchor", "middle")
+      .attr("class", "mapCodes")
+      .text(d => d.code);
+
+
+    mapSVG1.selectAll()
+      .data(dataset)
+      .enter()
+      .append("circle")
+      .attr("cx", d => mapXScale(d.col) + .5 * (mapXScale.bandwidth()))
+      .attr("cy", d => mapXScale(d.row) + .5 * (mapXScale.bandwidth()))
+      .attr("fill", "white")
+      .attr("fill-opacity", 0)
+      .attr("class", "starTick")
+      .style("stroke", "white")
+      .attr("stroke-width", "2px")
+      .attr("stroke-opacity", 0)
+      .attr("r", 36.5)
+      .attr("class", "tipCircle")
+      .attr("id", d => d.code + "Circle")
+      // .on("click", (event, d) => {
+      // arrow events do not work with this - need classic function - as per https://medium.com/@yonester/on-d3-and-arrow-functions-b6559c1cebb8
+      .on("mouseover", function(event, d) {
+        //   mapTip.transition()
+        //   .duration(300)
+        //   .style("visibility", "visible");
+        // mapTip.html('<span class="tipTitle">' + d.state + "</span></p>" + "Overall Ranking: " + d["OVERALL RANK"])
+        //   .style("visibility", "visible")
+        //   .style("opacity", 1);
+        d3.selectAll(".tipCircle")
+          // right now both fill and stroke change - should go to just changing
+          // fill - if I can undo it through a diff click OR stroke - if I cannot
+          .style("stroke-opacity", 0);
+        d3.select(this)
+          .style("stroke-opacity", 1);
+      })
+      // could also do this, but it doesn't work for me
+      // .on('click', (d, i, nodes) => {
+      //     d3.select(nodes[i]).text(d.name);
+      //       });
+
+      .on("click", function(event, d) {
+        mapTip.transition()
+          .duration(300)
+          .style("visibility", "visible");
+        mapTip.html('<span class="tipTitle">' + d.state + "</span><br/>" + "Overall Rank: " + d["Overall Rank"] + "<br/>Population (rank): " + d["Population"] + " (" + d["Population Rank"] + ") <br/>Total Area: " + d["Total Area (sq mi)"] +
+            " sq mi (" + d["Area Rank"] + ")" + '<br/><span class="instruction">Click a state for more information. <br/>Doubleclick to reset.</span>')
+
+          // .text(d.state + " Values" + " Overall Ranking: " + d["OVERALL RANK"])
+          .style("visibility", "visible")
+          .style("opacity", 1);
+        d3.selectAll(".tipCircle")
+          // right now both fill and stroke change - should go to just changing
+          // fill - if I can undo it through a diff click OR stroke - if I cannot
+          .style("fill-opacity", 0.3)
+          .style("stroke-opacity", 0);
+        // d3.select(nodes[i])
+        d3.select(this)
+          .style("fill-opacity", 0)
+          .style("stroke-opacity", 1);
+      })
+      .on("dblclick", function(event, d) {
+        d3.selectAll(".tipCircle")
+          .style("fill-opacity", 0)
+          .style("stroke-opacity", 0);
+        mapTip.html('<span class="subhead">An Overview of the States </span><span class="instruction">Click on a state for more information. <br>Doubleclick to reset.</span>')
+      })
+
+    ;
+
+    // so people can reset
+
+    const mapCont = d3.select("#mapCo")
+
+    //   mapSVG1.selectAll()
+    //   .on("dblclick", function(event, d){
+    //     mapSVG1.getElementsByClassName("tipCircle").style.backgroundColor = "red";
+    //   // document.getElementsByClassName(".tipCircle").style("fill-opacity", 0);
+    // });
+
+    // these also helped with tooltips - before I switched their format
+    // http://bl.ocks.org/d3noob/c37cb8e630aaef7df30d
+    // https://bl.ocks.org/d3noob/a22c42db65eb00d4e369
+
+
+    // **CAN:
+    // Here's the Functionality for the Toggles above the map.
+    // Changing the circle color from d.PurpleValue (which is just Registered Voters from Pew for now) to d.Biden works fine, and I think is the right way to toggle that
+    // The thing I am trying with visibility was the first exploration to seeing how I could change the visibility of a path as a way of showing different paths on one map - this would then also require changing all the labels in the legend by getElement - I could pull that off with two values, but I'd like to have more options than that...
+    // Presumably there is a much easier way to do this through LoDash or some such?
+
+    d3.select("#purpleSelect")
+      .selectAll("purpleOptions")
+      // **********lodash might be used here to have data be the state value for each?
+      .data(purpleList)
+      .enter()
+      .append("option")
+      .text(function(d) {
+        return d;
+      }) //text to be seen in menu
+      .attr("value", function(d) {
+        return d;
+      });
+
+    d3.select("#purpleSelect").on("change", function(d) {
+      var dropPurple = d3.select(this).property("value");
+      console.log(dropPurple);
+
+
+      if (dropPurple == "Cook PVI") {
+        d3.selectAll(".mapCircle")
+          .attr("fill", (d => PVColor(+d.PurpleValue)))
+      };
+      if (dropPurple == "2020 Election") {
+        d3.selectAll(".mapCircle")
+          .attr("fill", (d => PVColor(+d.Biden)))
+      };
+      if (dropPurple == "All the Same") {
+        d3.selectAll(".mapCircle")
+          .attr("fill", (d => PVColor(50)))
+      };
+    });
+
+    // fills the dropdown
+    d3.select("#rankSelect")
+      .selectAll("rankOptions")
+      // **********lodash might be used here to have data be the state value for each?
+      .data(rankList)
+      .enter()
+      .append("option")
+      .text(function(d) {
+        return d;
+      }) //text to be seen in menu
+      .attr("value", function(d) {
+        return d;
+      });
+
+    d3.select("#rankSelect").on("change", function(d) {
+      var dropRank = d3.select(this).property("value");
+      console.log(dropRank);
+
+
+      if (dropRank == "Overall") {
+        document.getElementById("legValTitle").innerHTML = overFeatTitle;
+        document.getElementById("legValA").innerHTML = overFeat[0].toLowerCase();
+        document.getElementById("legValB").innerHTML = overFeat[2];
+        document.getElementById("legValC").innerHTML = overFeat[4];
+        document.getElementById("legValD").innerHTML = overFeat[6];
+        document.getElementById("legValE").innerHTML = overFeat[8];
+        d3.selectAll(".overStarPath")
+          .attr("visibility", "visible")
+        d3.selectAll(".healthStarPath")
+          .attr("visibility", "hidden")
+        d3.selectAll(".econStarPath")
+          .attr("visibility", "hidden")
+        d3.selectAll(".eduStarPath")
+          .attr("visibility", "hidden")
+        d3.selectAll(".infraStarPath")
+          .attr("visibility", "hidden")
+        d3.selectAll(".opptyStarPath")
+          .attr("visibility", "hidden")
+        d3.selectAll(".crimeStarPath")
+          .attr("visibility", "hidden")
+        // .transition().duration(1000)
+      };
+
+      if (dropRank == "Health Care") {
+        document.getElementById("legValTitle").innerHTML = healthFeatTitle;
+        document.getElementById("legValA").innerHTML = healthFeat[0];
+        document.getElementById("legValB").innerHTML = healthFeat[2];
+        document.getElementById("legValC").innerHTML = healthFeat[4];
+        document.getElementById("legValD").innerHTML = healthFeat[6];
+        document.getElementById("legValE").innerHTML = healthFeat[8];
+        d3.selectAll(".overStarPath")
+          .attr("visibility", "hidden")
+        d3.selectAll(".healthStarPath")
+          .attr("visibility", "visible")
+        d3.selectAll(".econStarPath")
+          .attr("visibility", "hidden")
+        d3.selectAll(".eduStarPath")
+          .attr("visibility", "hidden")
+        d3.selectAll(".infraStarPath")
+          .attr("visibility", "hidden")
+        d3.selectAll(".opptyStarPath")
+          .attr("visibility", "hidden")
+        d3.selectAll(".crimeStarPath")
+          .attr("visibility", "hidden")
+      };
+      if (dropRank == "Economy") {
+        document.getElementById("legValTitle").innerHTML = econFeatTitle;
+        document.getElementById("legValA").innerHTML = econFeat[0];
+        document.getElementById("legValB").innerHTML = econFeat[2];
+        document.getElementById("legValC").innerHTML = econFeat[4];
+        document.getElementById("legValD").innerHTML = econFeat[6];
+        document.getElementById("legValE").innerHTML = econFeat[8];
+        d3.selectAll(".overStarPath")
+          .attr("visibility", "hidden")
+        d3.selectAll(".healthStarPath")
+          .attr("visibility", "hidden")
+        d3.selectAll(".econStarPath")
+          .attr("visibility", "visible")
+        d3.selectAll(".eduStarPath")
+          .attr("visibility", "hidden")
+        d3.selectAll(".infraStarPath")
+          .attr("visibility", "hidden")
+        d3.selectAll(".opptyStarPath")
+          .attr("visibility", "hidden")
+        d3.selectAll(".crimeStarPath")
+          .attr("visibility", "hidden")
+      };
+      if (dropRank == "Education") {
+        document.getElementById("legValTitle").innerHTML = eduFeatTitle;
+        document.getElementById("legValA").innerHTML = eduFeat[0];
+        document.getElementById("legValB").innerHTML = eduFeat[2];
+        document.getElementById("legValC").innerHTML = eduFeat[4];
+        document.getElementById("legValD").innerHTML = eduFeat[6];
+        document.getElementById("legValE").innerHTML = eduFeat[8];
+        d3.selectAll(".overStarPath, .econStarPath, .healthStarPath, .infraStarPath, .opptyStarPath, .crimeStarPath")
+          .attr("visibility", "hidden")
+        d3.selectAll(".eduStarPath")
+          .attr("visibility", "visible")
+      };
+
+      if (dropRank == "Infrastructure") {
+        document.getElementById("legValTitle").innerHTML = infraFeatTitle;
+        document.getElementById("legValA").innerHTML = infraFeat[0];
+        document.getElementById("legValB").innerHTML = infraFeat[2];
+        document.getElementById("legValC").innerHTML = infraFeat[4];
+        document.getElementById("legValD").innerHTML = infraFeat[6];
+        document.getElementById("legValE").innerHTML = infraFeat[8];
+        d3.selectAll(".overStarPath, .eduStarPath, .econStarPath, .healthStarPath, .opptyStarPath, .crimeStarPath")
+          .attr("visibility", "hidden")
+        d3.selectAll(".infraStarPath")
+          .attr("visibility", "visible")
+      };
+
+      if (dropRank == "Opportunity") {
+        document.getElementById("legValTitle").innerHTML = opptyFeatTitle;
+        document.getElementById("legValA").innerHTML = opptyFeat[0];
+        document.getElementById("legValB").innerHTML = opptyFeat[2];
+        document.getElementById("legValC").innerHTML = opptyFeat[4];
+        document.getElementById("legValD").innerHTML = opptyFeat[6];
+        document.getElementById("legValE").innerHTML = opptyFeat[8];
+        // var tipCircles = document.querySelectorAll('tipCircle');
+        // tipCircles.style.opacity = 1;
+        d3.selectAll(".overStarPath, .eduStarPath, .econStarPath, .healthStarPath, .infraStarPath, .crimeStarPath")
+          .attr("visibility", "hidden")
+        d3.selectAll(".opptyStarPath")
+          .attr("visibility", "visible")
+      };
+
+      if (dropRank == "Crime & Corrections") {
+        document.getElementById("legValTitle").innerHTML = crimeFeatTitle;
+        document.getElementById("legValA").innerHTML = crimeFeat[0];
+        document.getElementById("legValB").innerHTML = crimeFeat[2];
+        document.getElementById("legValC").innerHTML = crimeFeat[4];
+        document.getElementById("legValD").innerHTML = crimeFeat[6];
+        document.getElementById("legValE").innerHTML = crimeFeat[8];
+        d3.selectAll(".overStarPath, .eduStarPath, .econStarPath, .healthStarPath, .infraStarPath, .opptyStarPath")
+          .attr("visibility", "hidden")
+        d3.selectAll(".crimeStarPath")
+          .attr("visibility", "visible")
+      };
+
+    })
+
+
+    // ---------------------------- STATE COMPARISONS -----------------
+    // dropdown, here and above, pulled from https://www.d3-graph-gallery.com/graph/line_select.html
+    // setting default value is here: https://stackoverflow.com/questions/26898814/setting-default-selection-of-a-dropdown-menu-with-d3
+
+    // could try to structure all of this with bootstrap instead?
+
+    // var Washington;
+    d3.select("#stListSelectOne")
+      .selectAll("stateOptions")
+      // **********lodash might be used here to have data be the state value for each?
+      .data(stateList)
+      .enter()
+      .append("option")
+      .text(function(d) {
+        return d;
+      }) //text to be seen in menu
+      .attr("value", function(d) {
+        return d;
+      })
+      .property("selected", function(d) {
+        return d === "Washington";
+      });
+
+    d3.select("#stListSelectTwo")
+      .selectAll("stateOptions")
+      .data(stateList)
+      .enter()
+      .append("option")
+      .text(function(d) {
+        return d;
+      }) //text to be seen in menu
+      .attr("value", function(d) {
+        return d;
+      })
+      .property("selected", function(d) {
+        return d === "Louisiana";
+      });
+
+
+    d3.select("#stListSelectThree")
+      .selectAll("stateOptions")
+      // **********lodash might be used here to have data be the state value for each?
+      .data(stateList)
+      .enter()
+      .append("option")
+      .text(function(d) {
+        return d;
+      }) //text to be seen in menu
+      .attr("value", function(d) {
+        return d;
+      })
+      .property("selected", function(d) {
+        return d === "Utah";
+      });
+
+    d3.select("#stListSelectFour")
+      .selectAll("stateOptions")
+      .data(stateList)
+      .enter()
+      .append("option")
+      .text(function(d) {
+        return d;
+      }) //text to be seen in menu
+      .attr("value", function(d) {
+        return d;
+      })
+      .property("selected", function(d) {
+        return d === "Colorado";
+      });
+
+    d3.select("#regionSelectOne")
+      .selectAll("regionOptions")
+      .data(regionList)
+      .enter()
+      .append("option")
+      .text(function(d) {
+        return d;
+      }) //text to be seen in menu
+      .attr("value", function(d) {
+        return d;
+      })
+      .property("selected", function(d) {
+        return d === "The Midwest";
+      });
+
+    // INDIVIDUAL COMPARISON ONE
+
+    // STATE ONE
+    stCompOne.selectAll("svg")
+      // dataset for svg is defined from beginning, based on which State I want to discuss or highlight - will be looking to change this later
+      .data([dataset[46]])
+      // remember to change the number for the line as well....!
+      .enter()
+      .append("svg")
+      .attr("class", "solo");
+    // .attr("id", d => d.code)
+    for (var i = 0; i < overFeat.length; i++) {
+      let point = points[i];
+      console.log(point);
+      let angle = (Math.PI / 2) + (2 * Math.PI * i / ((overFeat.length - 1) / 2));
+      let line_coordinate = angleToCoordSing(angle, 1);
+      let label_coordinate = angleToCoordSing(angle, -10);
+      // label the points - again, think this is too many steps to label, but d3 does not default to handling these well
+      const legendLabel = stCompOne.append("text")
+        .attr("x", label_coordinate.x)
+        .attr("y", label_coordinate.y + 5)
+        .text(point)
+        .attr("text-anchor", "middle")
+        .attr("class", "legLabel");
+    };
+
+    ticks.forEach(t =>
+      // stCompOne.selectAll("svg")
+      stCompOne.selectAll("svg.solo")
+      .append("circle")
+      .attr("cx", (singleW / 2) + 20)
+      .attr("cy", (singleH / 2) + 20)
+      .attr("fill", (d => PVColor(+d.PurpleValue)))
+      .attr("stroke", "white")
+      .attr("stroke-opacity", 0.35)
+      .attr("r", radialScaleS(t))
+      .attr("class", "compOneCirc")
+    );
+
+    var stateLineOne = stCompOne.selectAll("svg")
+      .append("path")
+      .datum(getPathCoordSing(dataset[46], overFeat))
+      // i should be able to change this value
+      .attr("d", singLine)
+      .attr("stroke-width", 1)
+      .attr("stroke", "grey")
+      .attr("fill", "white")
+      .attr("stroke-opacity", 1)
+      .attr("opacity", 0.8)
+    console.log(singLine);
+
+    var changeLabelOne = stCompOne.selectAll("svg")
+      .append("text")
+      .attr("x", (singleW / 2) + 20)
+      .attr("y", (singleH / 2) + 25)
+      .attr("text-anchor", "middle")
+      .attr("fill", "darkslategrey")
+      .text(d => d.code);
+
+    // Name and Data fields for state Comp one
+    document.getElementById("compOneName").innerHTML = (dataset[46].state);
+    document.getElementById("compOneData").innerHTML = ("Overall Rank: " + '<span class="singStData">' + dataset[46]["Overall Rank"] + '</span>' + "</p>Health Care Rank: " + '<span class="singStData">' + dataset[46]["Health Care"] + '</span>' + "</p>Education Rank: " + '<span class="singStData">' + dataset[46]["Education"] + '</span>' + "</p>Economy Rank: " + '<span class="singStData">' + dataset[46]["Economy"] + '</span>' + "</p>Infrastructure Rank: " + '<span class="singStData">' + dataset[46]["Infrastructure"] + '</span>' + "</p>Opportunity Rank: " + '<span class="singStData">' + dataset[46]["Opportunity"] + '</span>' + "</p>Fiscal Stability Rank: " + '<span class="singStData">' + dataset[46]["Fiscal Stability"] + '</span>' + "</p>Crime & Corrections Rank: " + '<span class="singStData">' + dataset[46]["Crime & Corrections"] + '</span>' + "</p>Natural Environment Rank: " + '<span class="singStData">' + dataset[46]["Natural Environment"] + '</span>');
+
+      // document.getElementById("compOneData").innerHTML = ("Overall Ranking: " + '<span class="singStData">' + dataset[46]["Overall Rank"] + '</span>' + "</p>Health Care Ranking: " + '<span class="singStData">' + dataset[46]["Health Care"] +
+      //   '</span>' + "</p>Race 1: " + '<span class="singStData">' + dataset[46].Dem1 + '</span>' + "%</p>Race 2: " + '<span class="singStData">' + dataset[46].Dem2 + '</span>' + "%</p>Race 3: " + '<span class="singStData">' + dataset[46].Dem3 +
+      //   '</span>' + "%</p>Race 4: " + '<span class="singStData">' + dataset[46].Dem4 + '</span>' + "%</p>Race 5: " + '<span class="singStData">' + dataset[46].Dem5 + '</span>' + "%");
+
+    // a function to update solo stars + more later
+
+    d3.select("#stListSelectOne").on("change", function(d) {
+      var dropStateOne = d3.select(this).property("value")
+      // console.log(dropStateOne);
+      var drawStateOne = _.find(dataset, function(o) {
+        return o.state == dropStateOne
+      });
+      // console.log(drawState)
+      // lodash find: https://lodash.com/docs/4.17.15#find
+      stateLineOne
+        .datum(getPathCoordSing(drawStateOne, overFeat))
+        .transition().duration(1000)
+        .attr("d", singLine)
+
+      changeLabelOne
+        .transition().duration(1000)
+        .text(drawStateOne.code)
+
+      document.getElementById("compOneName").innerHTML = (drawStateOne.state);
+      document.getElementById("compOneData").innerHTML = ("Overall Rank: " + '<span class="singStData">' + drawStateOne["Overall Rank"] + '</span>' + "</p>Health Care Rank: " + '<span class="singStData">' + drawStateOne["Health Care"] + '</span>' + "</p>Education Rank: " + '<span class="singStData">' + drawStateOne["Education"] + '</span>' + "</p>Economy Rank: " + '<span class="singStData">' + drawStateOne["Economy"] + '</span>' + "</p>Infrastructure Rank: " + '<span class="singStData">' + drawStateOne["Infrastructure"] + '</span>' + "</p>Opportunity Rank: " + '<span class="singStData">' + drawStateOne["Opportunity"] + '</span>' + "</p>Fiscal Stability Rank: " + '<span class="singStData">' + drawStateOne["Fiscal Stability"] + '</span>' + "</p>Crime & Corrections Rank: " + '<span class="singStData">' + drawStateOne["Crime & Corrections"] + '</span>' + "</p>Natural Environment Rank: " + '<span class="singStData">' + drawStateOne["Natural Environment"] + '</span>');
+
+      var currentPurp = d3.select("#compOnePurp").property("value");
+      console.log(currentPurp);
+      d3.selectAll(".compOneCirc")
+        .attr("fill", currentPurpleSing(drawStateOne, currentPurp));
+
+    })
+
+    // ----------------- Same for second state
+
+    stCompTwo.selectAll("svg")
+      .data([dataset[17]])
+      // remember this number has to change for the path as well
+      .enter()
+      .append("svg")
+      .attr("width", PDwidth + margin.left + margin.right)
+      .attr("height", PDheight + 10 + margin.top + margin.bottom)
+      .attr("class", "solo")
+    // .attr("id", d => d.code)
+    ;
+
+    for (var i = 0; i < overFeat.length; i++) {
+      let point = points[i];
+      console.log(point);
+      let angle = (Math.PI / 2) + (2 * Math.PI * i / ((overFeat.length - 1) / 2));
+      let line_coordinate = angleToCoordSing(angle, 1);
+      let label_coordinate = angleToCoordSing(angle, -10);
+      // label the points - again, think this is too many steps to label, but d3 does not default to handling these well
+      const legendLabel = stCompTwo.append("text")
+        .attr("x", label_coordinate.x)
+        .attr("y", label_coordinate.y + 5)
+        .text(point)
+        .attr("text-anchor", "middle")
+        .attr("class", "legLabel");
+    };
+
+    ticks.forEach(t =>
+      stCompTwo.selectAll("svg.solo")
+      .append("circle")
+      .attr("cx", (singleW / 2) + 20)
+      .attr("cy", (singleH / 2) + 20)
+      .attr("fill", (d => PVColor(+d.PurpleValue)))
+      .attr("stroke", "white")
+      .attr("stroke-opacity", 0.35)
+      .attr("r", radialScaleS(t))
+      .attr("class", "compTwoCirc")
+    );
+
+    var stateLineTwo = stCompTwo.selectAll("svg")
+      .append("path")
+      .datum(getPathCoordSing(dataset[17], overFeat))
+      .attr("d", singLine)
+      .attr("stroke-width", 1)
+      .attr("stroke", "grey")
+      .attr("fill", "white")
+      .attr("stroke-opacity", 1)
+      .attr("opacity", 0.8)
+    console.log(singLine);
+
+    var changeLabelTwo = stCompTwo.selectAll("svg")
+      .append("text")
+      .attr("x", (singleW / 2) + 20)
+      .attr("y", (singleH / 2) + 25)
+      .attr("text-anchor", "middle")
+      .attr("fill", "darkslategrey")
+      .text(d => d.code);
+
+
+    // State Name and Data fields for state Comp Two
+
+    document.getElementById("compTwoName").innerHTML = (dataset[17].state);
+    document.getElementById("compTwoData").innerHTML = ("Overall Rank: " + '<span class="singStData">' + dataset[17]["Overall Rank"] + '</span>' + "</p>Health Care Rank: " + '<span class="singStData">' + dataset[17]["Health Care"] + '</span>' + "</p>Education Rank: " + '<span class="singStData">' + dataset[17]["Education"] + '</span>' + "</p>Economy Rank: " + '<span class="singStData">' + dataset[17]["Economy"] + '</span>' + "</p>Infrastructure Rank: " + '<span class="singStData">' + dataset[17]["Infrastructure"] + '</span>' + "</p>Opportunity Rank: " + '<span class="singStData">' + dataset[17]["Opportunity"] + '</span>' + "</p>Fiscal Stability Rank: " + '<span class="singStData">' + dataset[17]["Fiscal Stability"] + '</span>' + "</p>Crime & Corrections Rank: " + '<span class="singStData">' + dataset[17]["Crime & Corrections"] + '</span>' + "</p>Natural Environment Rank: " + '<span class="singStData">' + dataset[17]["Natural Environment"] + '</span>');
+
+
+    // ------------------ CHANGE STATE TWO
+    d3.select("#stListSelectTwo").on("change", function(d) {
+      var dropStateTwo = d3.select(this).property("value")
+
+      var drawStateTwo = _.find(dataset, function(o) {
+        return o.state == dropStateTwo
+      });
+      // console.log(drawState)
+
+      stateLineTwo
+        .datum(getPathCoordSing(drawStateTwo, overFeat))
+        .transition().duration(1000)
+        .attr("d", singLine)
+
+      changeLabelTwo
+        .transition().duration(1000)
+        .text(drawStateTwo.code)
+
+      document.getElementById("compTwoName").innerHTML = (drawStateTwo.state);
+      document.getElementById("compTwoData").innerHTML = ("Overall Rank: " + '<span class="singStData">' + drawStateTwo["Overall Rank"] + '</span>' + "</p>Health Care Rank: " + '<span class="singStData">' + drawStateTwo["Health Care"] + '</span>' + "</p>Education Rank: " + '<span class="singStData">' + drawStateTwo["Education"] + '</span>' + "</p>Economy Rank: " + '<span class="singStData">' + drawStateTwo["Economy"] + '</span>' + "</p>Infrastructure Rank: " + '<span class="singStData">' + drawStateTwo["Infrastructure"] + '</span>' + "</p>Opportunity Rank: " + '<span class="singStData">' + drawStateTwo["Opportunity"] + '</span>' + "</p>Fiscal Stability Rank: " + '<span class="singStData">' + drawStateTwo["Fiscal Stability"] + '</span>' + "</p>Crime & Corrections Rank: " + '<span class="singStData">' + drawStateTwo["Crime & Corrections"] + '</span>' + "</p>Natural Environment Rank: " + '<span class="singStData">' + drawStateTwo["Natural Environment"] + '</span>');
+
+      var currentPurp = d3.select("#compOnePurp").property("value");
+      console.log(currentPurp);
+      d3.selectAll(".compTwoCirc")
+        .attr("fill", currentPurpleSing(drawStateTwo, currentPurp));
+
+    })
+
+    // CHANGE PURPLE FOR FIRST COMPARISON
+    d3.select("#compOnePurp")
+      .selectAll("purpleOptions")
+      .data(purpleList)
+      .enter()
+      .append("option")
+      .text(function(d) {
+        return d;
+      }) //text to be seen in menu
+      .attr("value", function(d) {
+        return d;
+      });
+    // can select multiple classes: https://drafts.csswg.org/selectors-4/#grouping
+    // works - but can't work here because of multiple dropdowns.... I explored
+    d3.select("#compOnePurp").on("change", function(d) {
+      var dropPurple = d3.select(this).property("value");
+      console.log(dropPurple);
+
+      var currentStOne = d3.select("#stListSelectOne").property("value");
+      console.log(currentStOne);
+      var currentStOneP = _.find(dataset, function(o) {
+        return o.state == currentStOne
+      });
+      console.log(currentStOneP.code);
+
+      d3.selectAll(".compOneCirc")
+        .attr("fill", currentPurpleSing(currentStOneP, dropPurple));
+
+      var currentStTwo = d3.select("#stListSelectTwo").property("value");
+      console.log(currentStTwo);
+      var currentStTwoP = _.find(dataset, function(o) {
+        return o.state == currentStTwo
+      });
+      console.log(currentStTwoP.code);
+
+      d3.selectAll(".compTwoCirc")
+        .attr("fill", currentPurpleSing(currentStTwoP, dropPurple));
+
+    });
+
+
+    // COMPARISON TWO - ECONOMY - UTAH COLORADO
+
+    // STATE THREE
+    stCompThree.selectAll("svg")
+      .data([dataset[43]])
+      .enter()
+      .append("svg")
+      .attr("class", "solo");
+    for (var i = 0; i < econFeat.length; i++) {
+      let point = points[i];
+      console.log(point);
+      let angle = (Math.PI / 2) + (2 * Math.PI * i / ((econFeat.length - 1) / 2));
+      let line_coordinate = angleToCoordSing(angle, 1);
+      let label_coordinate = angleToCoordSing(angle, -10);
+      // label the points - again, think this is too many steps to label, but d3 does not default to handling these well
+      const legendLabel = stCompThree.append("text")
+        .attr("x", label_coordinate.x)
+        .attr("y", label_coordinate.y + 5)
+        .text(point)
+        .attr("text-anchor", "middle")
+        .attr("class", "legLabel");
+    };
+
+    ticks.forEach(t =>
+      stCompThree.selectAll("svg.solo")
+      .append("circle")
+      .attr("cx", (singleW / 2) + 20)
+      .attr("cy", (singleH / 2) + 20)
+      .attr("fill", (d => PVColor(+d.PurpleValue)))
+      .attr("stroke", "white")
+      .attr("stroke-opacity", 0.35)
+      .attr("r", radialScaleS(t))
+      .attr("class", "compThreeCirc")
+    );
+
+    var stateLineThree = stCompThree.selectAll("svg")
+      .append("path")
+      .datum(getPathCoordSing(dataset[43], econFeat))
+      // i should be able to chane this value
+      .attr("d", singLine)
+      .attr("stroke-width", 1)
+      .attr("stroke", "grey")
+      .attr("fill", "white")
+      .attr("stroke-opacity", 1)
+      .attr("opacity", 0.8)
+    console.log(singLine);
+
+    var changeLabelThree = stCompThree.selectAll("svg")
+      .append("text")
+      .attr("x", (singleW / 2) + 20)
+      .attr("y", (singleH / 2) + 25)
+      .attr("text-anchor", "middle")
+      .attr("fill", "darkslategrey")
+      .text(d => d.code);
+
+      document.getElementById("compThreeName").innerHTML = (dataset[43].state);
+      document.getElementById("compThreeData").innerHTML = ("<p>Economy Rank: " + '<span class="singStData">' + dataset[43]["Economy"] + '</span></p>' + "Overall Rank: " + '<span class="singStData">' + dataset[43]["Overall Rank"] + '</span></p>' + "2020 GDP (millions of $): " +'<span class="singStData">' + dataset[43]["GDP2020"] + '</span></p>' + "2019 GDP (millions of $): " +'<span class="singStData">' + dataset[43]["GDP2019"] + '</span></p>' + "Per Capita Personal Income (2020): " +'<span class="singStData">' + "$" + dataset[43]["2020 PCPI"] + '</span></p>');
+
+    d3.select("#stListSelectThree").on("change", function(d) {
+      var dropStateThree = d3.select(this).property("value")
+
+      var drawStateThree = _.find(dataset, function(o) {
+        return o.state == dropStateThree
+      });
+
+      stateLineThree
+        .datum(getPathCoordSing(drawStateThree, econFeat))
+        .transition().duration(1000)
+        .attr("d", singLine)
+
+      changeLabelThree
+        .transition().duration(1000)
+        .text(drawStateThree.code)
+
+      document.getElementById("compThreeName").innerHTML = (drawStateThree.state);
+      document.getElementById("compThreeData").innerHTML = ("<p>Economy Rank: " + '<span class="singStData">' + drawStateThree["Economy"] + '</span></p>' + "Overall Rank: " + '<span class="singStData">' + drawStateThree["Overall Rank"] + '</span></p>' + "2020 GDP (millions of $): " +'<span class="singStData">' + drawStateThree["GDP2020"] + '</span></p>' + "2019 GDP (millions of $): " +'<span class="singStData">' + drawStateThree["GDP2019"] + '</span></p>' + "Per Capita Personal Income (2020): " +'<span class="singStData">' + "$" + drawStateThree["2020 PCPI"] + '</span></p>');
+
+      var currentPurp = d3.select("#compTwoPurp").property("value");
+      console.log(currentPurp);
+      d3.selectAll(".compThreeCirc")
+        .attr("fill", currentPurpleSing(drawStateThree, currentPurp));
+
+    })
+
+
+    // STATE FOUR
+
+    stCompFour.selectAll("svg")
+      // dataset for svg is defined from beginning, based on which State I want to discuss or highlight - will be looking to maybe change this later?
+      .data([dataset[5]])
+      .enter()
+      .append("svg")
+      .attr("class", "solo");
+    for (var i = 0; i < econFeat.length; i++) {
+      let point = points[i];
+      console.log(point);
+      let angle = (Math.PI / 2) + (2 * Math.PI * i / ((econFeat.length - 1) / 2));
+      let line_coordinate = angleToCoordSing(angle, 1);
+      let label_coordinate = angleToCoordSing(angle, -10);
+      // label the points - again, think this is too many steps to label, but d3 does not default to handling these well
+      const legendLabel = stCompFour.append("text")
+        .attr("x", label_coordinate.x)
+        .attr("y", label_coordinate.y + 5)
+        .text(point)
+        .attr("text-anchor", "middle")
+        .attr("class", "legLabel");
+    };
+
+    ticks.forEach(t =>
+      // stCompOne.selectAll("svg")
+      stCompFour.selectAll("svg.solo")
+      .append("circle")
+      .attr("cx", (singleW / 2) + 20)
+      .attr("cy", (singleH / 2) + 20)
+      .attr("fill", (d => PVColor(+d.PurpleValue)))
+      .attr("stroke", "white")
+      .attr("stroke-opacity", 0.35)
+      .attr("r", radialScaleS(t))
+      .attr("class", "compFourCirc")
+    );
+
+    var stateLineFour = stCompFour.selectAll("svg")
+      .append("path")
+      .datum(getPathCoordSing(dataset[5], econFeat))
+      // i should be able to chane this value
+      .attr("d", singLine)
+      .attr("stroke-width", 1)
+      .attr("stroke", "grey")
+      .attr("fill", "white")
+      .attr("stroke-opacity", 1)
+      .attr("opacity", 0.8)
+    console.log(singLine);
+
+    var changeLabelFour = stCompFour.selectAll("svg")
+      .append("text")
+      .attr("x", (singleW / 2) + 20)
+      .attr("y", (singleH / 2) + 25)
+      .attr("text-anchor", "middle")
+      .attr("fill", "darkslategrey")
+      .text(d => d.code);
+
+      document.getElementById("compFourName").innerHTML = (dataset[5].state);
+      document.getElementById("compFourData").innerHTML = ("<p>Economy Rank: " + '<span class="singStData">' + dataset[5]["Economy"] + '</span></p>' + "Overall Rank: " + '<span class="singStData">' + dataset[5]["Overall Rank"] + '</span></p>' + "2020 GDP (millions of $): " +'<span class="singStData">' + dataset[5]["GDP2020"] + '</span></p>' + "2019 GDP (millions of $): " +'<span class="singStData">' + dataset[5]["GDP2019"] + '</span></p>' + "Per Capita Personal Income (2020): " +'<span class="singStData">' + "$" + dataset[5]["2020 PCPI"] + '</span></p>');
+
+
+// 2020 PCPI	GDP2019	GDP2020
+//
+//       Education Rank: " + '<span class="singStData">' + dataset[17]["Education"] + '</span>' + "</p>Economy Rank: " + '<span class="singStData">' + dataset[17]["Economy"] + '</span>' + "</p>Infrastructure Rank: " + '<span class="singStData">' + dataset[17]["Infrastructure"] + '</span>' + "</p>Opportunity Rank: " + '<span class="singStData">' + dataset[17]["Opportunity"] + '</span>' + "</p>Fiscal Stability Rank: " + '<span class="singStData">' + dataset[17]["Fiscal Stability"] + '</span>' + "</p>Crime & Corrections Rank: " + '<span class="singStData">' + dataset[17]["Crime & Corrections"] + '</span>' + "</p>Natural Environment Rank: " + '<span class="singStData">' + dataset[17]["Natural Environment"] + '</span>');
+
+
+
+      // CHANGING STATE FOUR
+    d3.select("#stListSelectFour").on("change", function(d) {
+      var dropStateFour = d3.select(this).property("value")
+
+      var drawStateFour = _.find(dataset, function(o) {
+        return o.state == dropStateFour
+      });
+      // console.log(drawState)
+      // lodash find: https://lodash.com/docs/4.17.15#find
+      stateLineFour
+        .datum(getPathCoordSing(drawStateFour, econFeat))
+        .transition().duration(1000)
+        .attr("d", singLine)
+
+      changeLabelFour
+        .transition().duration(1000)
+        .text(drawStateFour.code)
+
+      document.getElementById("compFourName").innerHTML = (drawStateFour.state);
+      document.getElementById("compFourData").innerHTML = ("<p>Economy Rank: " + '<span class="singStData">' + drawStateFour["Economy"] + '</span></p>' + "Overall Rank: " + '<span class="singStData">' + drawStateFour["Overall Rank"] + '</span></p>' + "2020 GDP (millions of $): " +'<span class="singStData">' + drawStateFour["GDP2020"] + '</span></p>' + "2019 GDP (millions of $): " +'<span class="singStData">' + drawStateFour["GDP2019"] + '</span></p>' + "Per Capita Personal Income (2020): " +'<span class="singStData">' + "$" + drawStateFour["2020 PCPI"] + '</span></p>');
+
+      var currentPurp = d3.select("#compTwoPurp").property("value");
+      console.log(currentPurp);
+      d3.selectAll(".compFourCirc")
+        .attr("fill", currentPurpleSing(drawStateFour, currentPurp));
+
+    });
+
+    // CHANGE PURPLE FOR SECOND COMPARISON
+    d3.select("#compTwoPurp")
+      .selectAll("purpleOptions")
+      .data(purpleList)
+      .enter()
+      .append("option")
+      .text(function(d) {
+        return d;
+      }) //text to be seen in menu
+      .attr("value", function(d) {
+        return d;
+      });
+    // can select multiple classes: https://drafts.csswg.org/selectors-4/#grouping
+    // works - but can't work here because of multiple dropdowns.... I explored
+    d3.select("#compTwoPurp").on("change", function(d) {
+      var dropPurple = d3.select(this).property("value");
+      console.log(dropPurple);
+
+      var currentStThree = d3.select("#stListSelectThree").property("value");
+      console.log(currentStThree);
+      var currentStThreeP = _.find(dataset, function(o) {
+        return o.state == currentStThree
+      });
+      console.log(currentStThreeP.code);
+
+      d3.selectAll(".compThreeCirc")
+        .attr("fill", currentPurpleSing(currentStThreeP, dropPurple));
+
+      var currentStFour = d3.select("#stListSelectFour").property("value");
+      console.log(currentStFour);
+      var currentStFourP = _.find(dataset, function(o) {
+        return o.state == currentStFour
+      });
+      console.log(currentStFourP.code);
+
+      d3.selectAll(".compFourCirc")
+        .attr("fill", currentPurpleSing(currentStFourP, dropPurple));
+
+    });
+
+
+    // ------------------------------ REGION
+
+    // ------------- REGION SECTION ONE
+
+    function midWestFilt(d) {
+      let midWestArray = [];
+      midWestArray.push(_.filter(dataset, ["The Midwest", "Y"]));
+      return midWestArray;
+    }
+
+    function newRegion(d) {
+      let newRegionArray = [];
+      newRegionArray.push(_.filter(dataset, [dropRegionOne, "Y"]));
+      return newRegionArray;
+    }
+
+    let midWest = midWestFilt(dataset)[0];
+
+    // const midWestTest = midWest(dataset);
+    // console.log(midWestTest);
+
+    document.getElementById("regOneName").innerHTML = "The Midwest";
+
+    stCompRegions.selectAll("svg")
+      .data(midWest)
+      .enter()
+      .append("svg")
+      .attr("width", regW + margin.left + margin.right)
+      .attr("height", regH + 20 + margin.top + margin.bottom)
+      .attr("class", "region");
+
+    ticks.forEach(t =>
+      stCompRegions.selectAll(".region")
+      .append("circle")
+      .attr("cx", (regW / 2) + 10)
+      .attr("cy", (regH / 2) + 25)
+      .attr("fill", (d => PVColor(+d.PurpleValue)))
+      .attr("stroke", "white")
+      .attr("stroke-opacity", 0.35)
+      .attr("r", radialScaleR(t))
+      .attr("class", "regOneCirc")
+      // .on("click", (event, d) => {
+      //   d3.selectAll("#tooltip")
+      //     .transition()
+      //     .duration(300)
+      //     .style("opacity", 1)
+      //     .style("left", (event.pageX + 2) + "px")
+      //     .style("top", (event.pageY + 2) + "px")
+      //     .text(d.state + " Values")
+      //     .style("visibility", "visible")
+      //     .style("opacity", .85);
+      // })
+      // .on("mouseout", (event, d) => {
+      //   d3.selectAll("#tooltip")
+      //     .style("visibility", "hidden")
+      // })
+    );
+
+    stCompRegions.selectAll("svg")
+      .attr("id", d => d.code)
+      .each(function(d) {
+        // .each(d => d){
+        console.log(d.code)
+        var svg = d3.select(this)
+
+        svg.append("text")
+          .attr("x", 10)
+          .attr("y", 15)
+          .attr("class", "regStLabel")
+          .text(d => d.state);
+
+        svg.append("path")
+          .datum(getPathCoordReg(d, infraFeat))
+          .attr("d", singLine)
+          .attr("stroke-width", 1)
+          .attr("stroke", "grey")
+          .attr("fill", "white")
+          .attr("stroke-opacity", 1)
+          .attr("opacity", 0.8);
+
+        svg.append("text")
+          .attr("x", (regW / 2) + 10)
+          .attr("y", (regH / 2) + 30)
+          .attr("text-anchor", "middle")
+          .attr("fill", "grey")
+          .text(d => d.code);
+      });
+
+
+    d3.select("#regOnePurp")
+      .selectAll("purpleOptions")
+      .data(purpleList)
+      .enter()
+      .append("option")
+      .text(function(d) {
+        return d;
+      }) //text to be seen in menu
+      .attr("value", function(d) {
+        return d;
+      });
+
+    d3.select("#regOnePurp").on("change", function(d) {
+      var dropPurple = d3.select(this).property("value");
+      console.log(dropPurple);
+      d3.selectAll(".regOneCirc")
+        .attr("fill", currentPurple(d, dropPurple));
+    });
+
+
+    // CHANGING THE REGIONS...
+
+    // CB regions and divisions
+    // https://www2.census.gov/geo/pdfs/maps-data/maps/reference/us_regdiv.pdf
+
+    d3.select("#regionSelectOne").on("change", function(d) {
+      var dropRegionOne = d3.select(this).property("value")
+
+      stCompRegions.selectAll('*').remove();
+
+      var currentPurp = d3.select("#regOnePurp").property("value");
+      console.log(currentPurp);
+
+      function newRegion(d) {
+        let newRegionArray = [];
+        newRegionArray.push(_.filter(dataset, [dropRegionOne, "Y"]));
+        return newRegionArray;
+      }
+
+      let newRegionOne = newRegion(dataset)[0];
+      // let testNewRegion = newRegion(dataset);
+      // let NewRegion = testNewRegion[0];
+
+      // console.log(dataset);
+      // console.log(NewRegion);
+      // console.log(testNewRegion[0])
+
+      document.getElementById("regOneName").innerHTML = (dropRegionOne);
+
+      stCompRegions.selectAll("svg")
+        .data(newRegionOne)
+        .enter()
+        .append("svg")
+        .attr("width", regW + margin.left + margin.right)
+        .attr("height", regH + 20 + margin.top + margin.bottom)
+        .attr("class", "region");
+
+      // think I can just make this fill a function tha I call elsewhere as well
+      // figured out function on fill from here: https://stackoverflow.com/questions/31788706/d3-if-else-to-set-color/31788858
+      // https://www.w3schools.com/js/js_if_else.asp
+      // function currentPurple(d) {
+      //   if (currentPurp == "Cook PVI") {
+      //     console.log(d.PurpleValue);
+      //     return (d => PVColor(+d.PurpleValue));
+      //   }
+      //   else if (currentPurp == "2020 Election") {
+      //     console.log(d.Biden);
+      //     return (d=>PVColor(+d.Biden));
+      //   }
+      //   else if (currentPurp == "All the Same") {
+      //     console.log("All");
+      //     return (d=>PVColor(50));
+      //   }
+      //   }
+
+      ticks.forEach(t =>
+        stCompRegions.selectAll(".region")
+        .append("circle")
+        .attr("cx", (regW / 2) + 10)
+        .attr("cy", (regH / 2) + 25)
+        .attr("fill", currentPurple(d, currentPurp))
+        .attr("stroke", "white")
+        .attr("stroke-opacity", 0.35)
+        .attr("r", radialScaleR(t))
+        .attr("class", "regOneCirc")
+        .on("click", (event, d) => {
+          //   d3.selectAll("#tooltip")
+          //     .transition()
+          //     .duration(300)
+          //     .style("opacity", 1)
+          //     .style("left", (event.pageX + 2) + "px")
+          //     .style("top", (event.pageY + 2) + "px")
+          //     .text(d.state + " Values")
+          //     .style("visibility", "visible")
+          //     .style("opacity", .85);
+          // })
+          // .on("mouseout", (event, d) => {
+          //   d3.selectAll("#tooltip")
+          //     .style("visibility", "hidden")
+        })
+      );
+
+
+
+      stCompRegions.selectAll("svg")
+        .attr("id", d => d.code)
+        .each(function(d) {
+          // .each(d => d){
+          console.log(d.code)
+          var svg = d3.select(this)
+
+          svg.append("text")
+            .attr("x", 10)
+            .attr("y", 15)
+            .attr("class", "regStLabel")
+            .text(d => d.state);
+
+          svg.append("path")
+            .datum(getPathCoordReg(d, infraFeat))
+            .attr("d", singLine)
+            .attr("stroke-width", 1)
+            .attr("stroke", "grey")
+            .attr("fill", "white")
+            .attr("stroke-opacity", 1)
+            .attr("opacity", 0.8);
+
+          svg.append("text")
+            .attr("x", (regW / 2) + 10)
+            .attr("y", (regH / 2) + 30)
+            .attr("text-anchor", "middle")
+            .attr("fill", "grey")
+            .text(d => d.code);
+        });
+
+    });
+
+    // END OF CSV
+  });
+</script>
+
+</html>
